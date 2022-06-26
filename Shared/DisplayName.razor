@@ -1,0 +1,43 @@
+﻿@using System.Reflection
+@using System.Linq.Expressions;
+@using System.ComponentModel.DataAnnotations;
+
+@typeparam TItem
+
+<label>@label</label>
+
+@code {
+    [Parameter] public Expression<Func<TItem>> For { get; set; }
+    [Parameter] public object ForEnum { get; set; }
+
+    private string label => GetDisplayName();
+
+    private string GetDisplayName()
+    {
+        try
+        {
+            if (For is null && ForEnum != null)
+            {
+                if (ForEnum.GetType().BaseType == typeof(Enum))
+                {
+                    var displayName = ((Enum)ForEnum).GetAttribute<DisplayAttribute>() as DisplayAttribute;
+                    return displayName?.Name ?? ForEnum?.ToString() ?? "";
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
+            }
+            else
+            {
+               var expression = (MemberExpression)For.Body;
+               var value = expression.Member.GetCustomAttribute(typeof(DisplayAttribute)) as DisplayAttribute;
+               return value?.Name ?? expression.Member.Name ?? "";
+            }
+        }
+        catch (Exception)
+        {
+            return "";
+        }
+    }
+}

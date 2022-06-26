@@ -1,0 +1,64 @@
+@page "/Register"
+@using DatingApp.FrontEnd.Models
+
+<div class="row register-content">
+    <div class="col-lg-1 register-main-diff">
+        <div class="row title-div">
+            <h3>New Account</h3>
+        </div>
+        <div class="row title-div">
+            <p>Fill in all required fields to register your account</p>
+        </div>
+
+        <EditForm class="row" Model="@account" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="row form-control-row">
+                <BSInput placeholder="First Name" @bind-Value="account.FirstName" />
+            </div>
+            <div class="row form-control-row">
+                <BSInput placeholder="Last Name" @bind-Value="account.LastName" />
+            </div>
+            <div class="row form-control-row">
+                <BSInput InputType="InputType.Email" placeholder="Email" @bind-Value="account.Email"/>
+            </div>
+
+            <div class="row form-control-row">
+                <BSInput InputType="InputType.Select" @bind-Value="account.Gender" >
+                     @foreach (var gender in Enum.GetValues(typeof(Gender)))
+                     {
+                        <option value="@gender">
+                            <DisplayName TItem="Gender" ForEnum="@gender"></DisplayName>
+                        </option>
+                     }
+                </BSInput>
+            </div>
+
+            <div class="row form-control-row">
+                <BSInput InputType="InputType.Date" @bind-Value="account.DateOfBirth"/>
+            </div>
+
+            <div class="row form-control-row">
+                <BSInput InputType="InputType.Password" placeholder="Password" @bind-Value="account.Password"/>
+            </div>
+
+            <div class="row form-control-row">
+                <BSInput InputType="InputType.Password" placeholder="Password" @bind-Value="account.Password"/>
+            </div>
+
+            <div class="row form-control-row">
+                <button type="submit" id="register-btn" class="btn register-btn">Register</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    RegisterUser account = new ();
+
+    void HandleValidSubmit()
+    {
+        // TODO: Make a call to API
+    }
+}

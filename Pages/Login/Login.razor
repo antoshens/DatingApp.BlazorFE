@@ -1,0 +1,53 @@
+﻿@page "/Login"
+@using DatingApp.FrontEnd.Models
+@inject NavigationManager NavigationManager
+
+<div class="row login-content">
+    <div class="col-lg-1 login-main-diff">
+        <div class="row title-div">
+            <h3>Login</h3>
+        </div>
+        <div class="row title-div">
+            <p>Hey, Enter your details to sign in to your account</p>
+        </div>
+
+        <EditForm class="row" Model="@userLogin" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="row form-control-row">
+                <BSInput placeholder="Enter Email / Username" @bind-Value="userLogin.Login" />
+            </div>
+            <div class="row form-control-row">
+                <BSInput InputType="InputType.Password" placeholder="Password" @bind-Value="userLogin.Password" />
+            </div>
+
+            <div class="row form-text-row">
+                <a class="btn-link">Having troubles with sing in?</a>
+            </div>
+
+            <div class="row form-control-row">
+                <button type="submit" id="login-btn" class="btn login-btn">Sing in</button>
+            </div>
+
+            <div class="row form-text-row">
+                <p>Don't have account?</p>
+                <a class="btn-link" @onclick="OnRegisterClick">Register Now</a>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    UserLogin userLogin = new();
+
+    void OnRegisterClick()
+    {
+        NavigationManager.NavigateTo("Register");
+    }
+
+    async Task HandleValidSubmit()
+    {
+        // TODO: Make a call to API
+    }
+}

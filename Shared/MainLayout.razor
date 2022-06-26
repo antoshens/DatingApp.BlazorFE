@@ -1,0 +1,37 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<PageTitle>DatingApp.FrontEnd</PageTitle>
+
+<div class="page">
+    @*<div class="sidebar">
+        <NavMenu />
+    </div>*@
+
+    <main>
+        @*<div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>*@
+
+        <article class="content px-4">
+            @Body
+        </article>
+
+        @if (!NavigationManager.Uri.Contains("PrivacyPolicy", StringComparison.OrdinalIgnoreCase))
+        {
+            <footer>
+                <div class="footer footer-text-row">
+                <p>Copyright &copy;@DateTime.Now.Year |</p>
+                <a id="policy-link" class="btn-link" onclick="@OnPrivacyPolicyClick">Privacy Policy</a>
+            </div>
+        </footer>
+        }
+    </main>
+</div>
+
+@code {
+    void OnPrivacyPolicyClick()
+    {
+        NavigationManager.NavigateTo("PrivacyPolicy");
+    }
+}

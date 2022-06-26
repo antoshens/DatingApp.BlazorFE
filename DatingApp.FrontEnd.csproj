@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>0c7690f8-100b-455d-af4e-6eb1f38a494d</UserSecretsId>
+    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorStrap" Version="5.0.105.4262022" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+  </ItemGroup>
+
+  <!-- Add SCSS files to dotnet watch -->
+  <ItemGroup>
+    <Watch Include="**\*.scss" />
+    <None Update="**\*.css" watch="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <ComponentScssFiles Include="**/*/*.scss" Exclude="node_modules/**;wwwroot/**" />
+  </ItemGroup>
+
+  <!-- Compile SCSS files into CSS -->
+  <Target Name="CompileComponentSass" BeforeTargets="Compile">
+    <Message Text="Compiling all components' SCSS files" Importance="high" />
+    <Exec Condition="!$([System.Text.RegularExpressions.Regex]::IsMatch ('%(ComponentScssFiles.Identity)', `.*[/\\]_.*`))" Command="npm run compile-sass -- --style=compressed --no-source-map --load-path=Styles/Core %(ComponentScssFiles.Identity) %(relativedir)%(filename).css" />
+  </Target>
+
+  <Target Name="CompileGlobalSass" BeforeTargets="Compile">
+    <Message Text="Compiling global SCSS file" Importance="high" />
+    <Exec Command="npm run compile-sass -- --style=compressed wwwroot/css" />
+  </Target>
+
+</Project>
