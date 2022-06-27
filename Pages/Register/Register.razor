@@ -1,5 +1,8 @@
 @page "/Register"
+@using DatingApp.FrontEnd.Gateway.DotNetGateway
 @using DatingApp.FrontEnd.Models
+
+@inject GatewayAdapter gtwAddapter;
 
 <div class="row register-content">
     <div class="col-lg-1 register-main-diff">
@@ -10,45 +13,75 @@
             <p>Fill in all required fields to register your account</p>
         </div>
 
+        <BSProgress>
+            <BSProgressBar Color="BSColor.Success" Value="@(currentStep * 50)"></BSProgressBar>
+        </BSProgress>
+
         <EditForm class="row" Model="@account" OnValidSubmit="@HandleValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <div class="row form-control-row">
-                <BSInput placeholder="First Name" @bind-Value="account.FirstName" />
-            </div>
-            <div class="row form-control-row">
-                <BSInput placeholder="Last Name" @bind-Value="account.LastName" />
-            </div>
-            <div class="row form-control-row">
-                <BSInput InputType="InputType.Email" placeholder="Email" @bind-Value="account.Email"/>
-            </div>
+            @if (currentStep == 1)
+            {
+                <div class="row form-control-row">
+                    <BSInput placeholder="First Name" @bind-Value="account.FirstName" />
+                </div>
+                <div class="row form-control-row">
+                    <BSInput placeholder="Last Name" @bind-Value="account.LastName" />
+                </div>
+                <div class="row form-control-row">
+                    <BSInput InputType="InputType.Email" placeholder="Email" @bind-Value="account.Email" />
+                </div>
 
-            <div class="row form-control-row">
-                <BSInput InputType="InputType.Select" @bind-Value="account.Gender" >
-                     @foreach (var gender in Enum.GetValues(typeof(Gender)))
-                     {
+                <div class="row form-control-row">
+                    <BSInput InputType="InputType.Select" @bind-Value="account.Gender">
+                        @foreach (var gender in Enum.GetValues(typeof(Gender)))
+                        {
                         <option value="@gender">
                             <DisplayName TItem="Gender" ForEnum="@gender"></DisplayName>
                         </option>
-                     }
-                </BSInput>
-            </div>
+                        }
+                    </BSInput>
+                </div>
 
-            <div class="row form-control-row">
-                <BSInput InputType="InputType.Date" @bind-Value="account.DateOfBirth"/>
-            </div>
+                <div class="row form-control-row">
+                    <BSInput InputType="InputType.Date" @bind-Value="account.DateOfBirth" />
+                </div>
 
-            <div class="row form-control-row">
-                <BSInput InputType="InputType.Password" placeholder="Password" @bind-Value="account.Password"/>
-            </div>
+                <div class="row form-control-row">
+                    <BSInput InputType="InputType.Password" placeholder="Password" @bind-Value="account.Password" />
+                </div>
 
-            <div class="row form-control-row">
-                <BSInput InputType="InputType.Password" placeholder="Password" @bind-Value="account.Password"/>
-            </div>
+                <div class="row form-control-row">
+                    <BSInput InputType="InputType.Password" placeholder="Repeat Password" @bind-Value="account.RepeatPassword" />
+                </div>
+            }
+            else
+            {
+                <div class="row form-control-row">
+                    <BSInput InputType="InputType.Text" placeholder="Country" @bind-Value="account.Country" />
+                </div>
 
-            <div class="row form-control-row">
-                <button type="submit" id="register-btn" class="btn register-btn">Register</button>
+                <div class="row form-control-row">
+                    <BSInput InputType="InputType.Text" placeholder="City" @bind-Value="account.City" />
+                </div>
+
+                <div class="row form-control-row">
+                    <BSInput InputType="InputType.TextArea" placeholder="About me" @bind-Value="account.Interests" />
+                </div>
+            }
+
+            <div class="@(currentStep > 1 ? "register-btn-grp" : "")">
+                @if (currentStep > 1)
+                {
+                    <div class="row form-control-row back-btn">
+                        <a class="btn-link" @onclick="OnBackClick">&#8592;Back</a>
+                    </div>
+                }
+
+                <div class="form-control-row @(currentStep == 1 ? "row" : "col")">
+                    <button type="submit" id="register-btn" class="btn register-btn">@(currentStep == 1 ? "Next" : "Register")</button>
+                </div>
             </div>
         </EditForm>
     </div>
@@ -56,9 +89,17 @@
 
 @code {
     RegisterUser account = new ();
+    int currentStep = 1;
 
-    void HandleValidSubmit()
+    void OnBackClick() => --currentStep;
+
+    async Task HandleValidSubmit()
     {
-        // TODO: Make a call to API
+        if (currentStep == 2)
+        {
+            await gtwAddapter.RegisterAsync(account);
+        }
+
+        ++currentStep;
     }
 }

@@ -22,5 +22,18 @@ namespace DatingApp.FrontEnd.Models
 
         [Required(ErrorMessage = "Passwrod is required")]
         public string Password {get; set;} = string.Empty;
+
+        [Required(ErrorMessage = "You should repeat your password")]
+        [Compare(nameof(Password), ErrorMessage = "Passwords should be identical")]
+        public string RepeatPassword { get; set; } = string.Empty;
+
+        public string Interests { get; set; } = string.Empty;
+
+        //public string LookingFor { get; set; } = string.Empty;
+        //IEnumerable<PhotoDto> Photos,
+
+        public string City { get; set; } = string.Empty;
+
+        public string Country { get; set; } = string.Empty;
     }
 }

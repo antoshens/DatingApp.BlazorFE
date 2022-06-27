@@ -1,6 +1,9 @@
 ﻿@page "/Login"
+@using DatingApp.FrontEnd.Gateway.DotNetGateway
 @using DatingApp.FrontEnd.Models
+
 @inject NavigationManager NavigationManager
+@inject GatewayAdapter gtwAdapter
 
 <div class="row login-content">
     <div class="col-lg-1 login-main-diff">
@@ -48,6 +51,11 @@
 
     async Task HandleValidSubmit()
     {
-        // TODO: Make a call to API
+        var response = await gtwAdapter.LoginAsync(userLogin);
+
+        if (response != null)
+        {
+            NavigationManager.NavigateTo("Dashboard");
+        }
     }
 }

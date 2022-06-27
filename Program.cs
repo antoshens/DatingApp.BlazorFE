@@ -1,4 +1,6 @@
 using BlazorStrap;
+using DatingApp.FrontEnd.Gateway.Configuration;
+using DatingApp.FrontEnd.Gateway.DotNetGateway;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddBlazorStrap();
+
+ConfigureSettings(builder.Configuration, builder.Services);
+ConfigureServices(builder.Configuration, builder.Services);
 
 var app = builder.Build();
 
@@ -28,3 +33,28 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
+void ConfigureServices(ConfigurationManager config, IServiceCollection services)
+{
+    var apiOptions = config.GetSection("DatingApp.API");
+    var baseUrl = apiOptions.GetValue<string>("BaseUrl");
+
+    services.AddHttpClient("datingapp", cl =>
+    {
+        cl.BaseAddress = new Uri(baseUrl);
+    });
+    services.AddScoped<IHttpClientService, HttpClientService>();
+    services.AddScoped<GatewayAdapter>();
+}
+
+void ConfigureSettings(ConfigurationManager config, IServiceCollection services)
+{
+    services.AddSingleton(provider =>
+    {
+        var apiOptions = config.GetSection("DatingApp.API");
+
+        var baseUrl = apiOptions.GetValue<string>("BaseUrl");
+
+        return new ApiOptions(baseUrl);
+    });
+}
