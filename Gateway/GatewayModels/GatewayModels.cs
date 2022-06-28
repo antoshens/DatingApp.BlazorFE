@@ -10,7 +10,6 @@
         byte LookingFor,
         string City,
         string Country,
-        //IEnumerable<PhotoDto> Photos,
         string? FirstName,
         string? LastName,
         string Email,
