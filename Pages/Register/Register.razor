@@ -142,7 +142,7 @@
                 customErrorMessage = "Please select your avatar";
                 return;
             }
-            
+
             showCustomError = false;
             isRegistrationProcessing = true;
             var response = await gtwAddapter.RegisterAsync(account);
@@ -156,7 +156,7 @@
             else
             {
                 var warningMessage = "Something went wrong during registration";
-                ShowToaster(warningMessage, 5000);
+                ShowToaster(warningMessage);
             }
 
             return;
@@ -171,12 +171,19 @@
         {
             var browserImage = e.File;
 
-            using var stream = browserImage.OpenReadStream(5000000); // max file size - 5 MB
-            account.MainPhoto = new FormFile(stream, stream.Position, stream.Length, "\"photos\"", browserImage.Name);
+            try
+            {
+                using var stream = browserImage.OpenReadStream(5000000); // max file size - 5 MB
+                account.MainPhoto = new FormFile(stream, stream.Position, stream.Length, "\"photos\"", browserImage.Name);
+            }
+            catch (IOException)
+            {
+                ShowToaster("Photo size shouldn't be more than 5MB");
+            }
         }
     }
 
-    private void ShowToaster(string message, int timer)
+    private void ShowToaster(string message, int timer = 5000)
     {
         _blazorStrap.Toaster.Add(message, o =>
         {
