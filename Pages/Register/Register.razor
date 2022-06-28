@@ -24,6 +24,13 @@
             <DataAnnotationsValidator />
             <BSCol Position="Position.Relative" ColumnMedium="12">
                 <BSValidationSummary />
+
+                @if (showCustomError)
+                {
+                    <ul class="validation-errors">
+                        <li class="validation-message">@customErrorMessage</li>
+                    </ul>
+                }
             </BSCol>
 
             @*Spinner*@
@@ -116,13 +123,27 @@
     int currentStep = 1;
     bool isRegistrationProcessing;
     const int maxStepsAmount = 3;
+    bool showCustomError;
+    string customErrorMessage;
 
-    void OnBackClick() => --currentStep;
+    void OnBackClick()
+    {
+        showCustomError = false;
+        --currentStep;
+    }
 
     async Task HandleValidSubmit()
     {
         if (currentStep == maxStepsAmount)
         {
+            if (!account.HasMainPhoto) // little hack to not implement a full wizard with steps
+            {
+                showCustomError = true;
+                customErrorMessage = "Please select your avatar";
+                return;
+            }
+            
+            showCustomError = false;
             isRegistrationProcessing = true;
             var response = await gtwAddapter.RegisterAsync(account);
             // TODO: Add API call to upload main photo
@@ -137,6 +158,8 @@
                 var warningMessage = "Something went wrong during registration";
                 ShowToaster(warningMessage, 5000);
             }
+
+            return;
         }
 
         ++currentStep;
@@ -148,15 +171,8 @@
         {
             var browserImage = e.File;
 
-            var fileContent = new StreamContent(browserImage.OpenReadStream(maxFileSize));
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue(browserImage.ContentType);
-
-            using var content = new MultipartFormDataContent();
-            content.Add(content: fileContent,
-                    name: "\"photos\"",
-                    fileName: e.File.Name);
-
-            account.MainPhoto = (IFormFile)content;
+            using var stream = browserImage.OpenReadStream(5000000); // max file size - 5 MB
+            account.MainPhoto = new FormFile(stream, stream.Position, stream.Length, "\"photos\"", browserImage.Name);
         }
     }
 

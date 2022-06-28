@@ -22,6 +22,9 @@ namespace DatingApp.FrontEnd.Models
 
         public Gender Gender { get; set; } = Gender.NotSpecified;
 
+        [Required(ErrorMessage = "Please choose who you're looking for")]
+        public LookingFor LookingFor { get; set; }
+
         [Required(ErrorMessage = "Passwrod is required")]
         public string Password {get; set;} = string.Empty;
 

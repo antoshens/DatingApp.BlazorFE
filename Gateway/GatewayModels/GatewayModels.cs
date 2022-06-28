@@ -7,7 +7,7 @@
     public record class UserGateway(string UserName,
         string Password,
         string Interests,
-        string LookingFor,
+        byte LookingFor,
         string City,
         string Country,
         //IEnumerable<PhotoDto> Photos,
