@@ -1,5 +1,6 @@
 ﻿using DatingApp.FrontEnd.Gateway.Configuration;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace DatingApp.FrontEnd.Gateway.DotNetGateway
 {
@@ -41,10 +42,11 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
                 if (model != null)
                 {
                     content = JsonConvert.SerializeObject(model);
+                    var stringContent = new StringContent(content, Encoding.UTF8, "application/json");
 
                     _logger.LogInformation($"Sending POST request to {_options.BaseUrl}{fullUrl} with body {content}.");
 
-                    response = await httpClient.PostAsJsonAsync(fullUrl, content);
+                    response = await httpClient.PostAsync(fullUrl, stringContent);
                 }
                 else
                 {
@@ -53,15 +55,18 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
                     response = await httpClient.PostAsync(fullUrl, null);
                 }
 
+                var jsonResponse = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
                     var responseModel = JsonConvert.DeserializeObject<TResponse>(jsonResponse);
-
                     _logger.LogInformation($"Reply POST {_options.BaseUrl}{fullUrl} - {jsonResponse}.");
 
                     return responseModel;
+                }
+                else
+                {
+                    _logger.LogWarning($"Bad reply for {fullUrl}. Details: {jsonResponse}");
                 }
 
                 return null;
