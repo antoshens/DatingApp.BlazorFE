@@ -86,3 +86,29 @@ div .spinner {
     width: 70px;
     border-width: 7px;
 }
+
+.not-found-container {
+    height: calc(100vh - 60px);
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.not-found-message {
+    text-align: center;
+    padding-bottom: 70px;
+}
+
+.not-found-button {
+    width: 15% !important;
+    background-color: #fdc886 !important;
+}
+
+button .not-found-button:hover {
+    color: black !important;
+}
+
+div .not-found-button-container {
+    display: flex;
+    justify-content: center;
+}

@@ -1,9 +1,12 @@
-﻿@inherits LayoutComponentBase
+﻿@using DatingApp.FrontEnd.Models.CurrentUser
+@inherits LayoutComponentBase
+
 @inject NavigationManager NavigationManager
+@inject ICurrentUser _currentUser; 
 
-<PageTitle>DatingApp.FrontEnd</PageTitle>
+<PageTitle>DatingApp</PageTitle>
 
-@if (false) // TODO: Show only for authorized users 
+@if (_currentUser.IsLoggedIn) 
 {
     <div class="sidebar">
         <NavMenu />
