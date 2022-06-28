@@ -1,6 +1,7 @@
 using BlazorStrap;
 using DatingApp.FrontEnd.Gateway.Configuration;
 using DatingApp.FrontEnd.Gateway.DotNetGateway;
+using DatingApp.FrontEnd.Models.CurrentUser;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,8 @@ void ConfigureServices(ConfigurationManager config, IServiceCollection services)
     });
     services.AddScoped<IHttpClientService, HttpClientService>();
     services.AddScoped<GatewayAdapter>();
+
+    services.AddSingleton<ICurrentUser, CurrentUser>();
 }
 
 void ConfigureSettings(ConfigurationManager config, IServiceCollection services)

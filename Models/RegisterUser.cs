@@ -1,3 +1,4 @@
+using DatingApp.FrontEnd.Models.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace DatingApp.FrontEnd.Models
@@ -16,6 +17,7 @@ namespace DatingApp.FrontEnd.Models
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email {get; set;} = string.Empty;
 
+        [DateRange(18, ErrorMessage = "You should be older than 18 y. o.")]
         public DateOnly DateOfBirth { get; set; } = DateOnly.FromDateTime(DateTime.Now.Date);
 
         public Gender Gender { get; set; } = Gender.NotSpecified;

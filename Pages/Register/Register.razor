@@ -3,6 +3,8 @@
 @using DatingApp.FrontEnd.Models
 
 @inject GatewayAdapter gtwAddapter;
+@inject NavigationManager NavigationManager;
+@inject IBlazorStrap _blazorStrap;
 
 <div class="row register-content">
     <div class="col-lg-1 register-main-diff">
@@ -19,7 +21,17 @@
 
         <EditForm class="row" Model="@account" OnValidSubmit="@HandleValidSubmit">
             <DataAnnotationsValidator />
-            <ValidationSummary />
+            <BSCol Position="Position.Relative" ColumnMedium="12">
+                <BSValidationSummary />
+            </BSCol>
+
+            @*Spinner*@
+            @if (isRegistrationProcessing)
+            {
+                <div class="spinner-div">
+                    <BSSpinner id="spinner" Class="spinner" Color="BSColor.Warning" Size="Size.ExtraLarge" />
+                </div>
+            }
 
             @if (currentStep == 1)
             {
@@ -80,16 +92,20 @@
                 }
 
                 <div class="form-control-row @(currentStep == 1 ? "row" : "col")">
-                    <button type="submit" id="register-btn" class="btn register-btn">@(currentStep == 1 ? "Next" : "Register")</button>
+                    <button type="submit" id="register-btn" disabled="@(isRegistrationProcessing)" class="btn register-btn">@(currentStep == 1 ? "Next" : "Register")</button>
                 </div>
             </div>
         </EditForm>
     </div>
 </div>
 
+@*Warning toaster*@
+<BSToaster/>
+
 @code {
     RegisterUser account = new ();
     int currentStep = 1;
+    bool isRegistrationProcessing;
 
     void OnBackClick() => --currentStep;
 
@@ -97,9 +113,31 @@
     {
         if (currentStep == 2)
         {
-            await gtwAddapter.RegisterAsync(account);
+            isRegistrationProcessing = true;
+            var response = await gtwAddapter.RegisterAsync(account);
+            isRegistrationProcessing = false;
+
+            if (response != null)
+            {
+                NavigationManager.NavigateTo("Login");
+            }
+            else
+            {
+                var warningMessage = "Something went wrong during registration";
+                ShowToaster(warningMessage, 5000);
+            }
         }
 
         ++currentStep;
+    }
+
+    private void ShowToaster(string message, int timer)
+    {
+        _blazorStrap.Toaster.Add(message, o =>
+        {
+            o.CloseAfter = timer;
+            o.Toast = Toast.TopLeft;
+            o.Color = BSColor.Warning;
+        });
     }
 }

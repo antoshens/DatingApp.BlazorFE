@@ -1,9 +1,12 @@
 ﻿@page "/Login"
 @using DatingApp.FrontEnd.Gateway.DotNetGateway
 @using DatingApp.FrontEnd.Models
+@using DatingApp.FrontEnd.Models.CurrentUser
 
 @inject NavigationManager NavigationManager
 @inject GatewayAdapter gtwAdapter
+@inject ICurrentUser currentUser
+@inject IBlazorStrap _blazorStrap
 
 <div class="row login-content">
     <div class="col-lg-1 login-main-diff">
@@ -16,7 +19,17 @@
 
         <EditForm class="row" Model="@userLogin" OnValidSubmit="@HandleValidSubmit">
             <DataAnnotationsValidator />
-            <ValidationSummary />
+            <BSCol Position="Position.Relative" ColumnMedium="12">
+                <BSValidationSummary />
+            </BSCol>
+
+            @*Spinner*@
+            @if (isLogginProcessing)
+            {
+                <div class="spinner-div">
+                    <BSSpinner id="spinner" Class="spinner" Color="BSColor.Warning" Size="Size.ExtraLarge" />
+                </div>
+            }
 
             <div class="row form-control-row">
                 <BSInput placeholder="Enter Email / Username" @bind-Value="userLogin.Login" />
@@ -30,7 +43,7 @@
             </div>
 
             <div class="row form-control-row">
-                <button type="submit" id="login-btn" class="btn login-btn">Sing in</button>
+                <button type="submit" id="login-btn" disabled="@(isLogginProcessing)" class="btn login-btn">Sing in</button>
             </div>
 
             <div class="row form-text-row">
@@ -41,8 +54,13 @@
     </div>
 </div>
 
+@*Warning toaster*@
+<BSToaster/>
+
 @code {
     UserLogin userLogin = new();
+    bool showWarning;
+    bool isLogginProcessing;
 
     void OnRegisterClick()
     {
@@ -51,11 +69,38 @@
 
     async Task HandleValidSubmit()
     {
+        isLogginProcessing = true;
         var response = await gtwAdapter.LoginAsync(userLogin);
+        isLogginProcessing = false;
 
         if (response != null)
         {
-            NavigationManager.NavigateTo("Dashboard");
+            currentUser.SetCurrentUser(response.Token);
+
+            if (currentUser.IsLoggedIn)
+            {
+                NavigationManager.NavigateTo("Dashboard");
+            }
+            else
+            {
+                var warningMessage = "Something went wrong during login";
+                ShowToaster(warningMessage, 5000);
+            }
         }
+        else
+        {
+            var warningMessage = "Something went wrong during login";
+            ShowToaster(warningMessage, 5000);
+        }
+    }
+
+    private void ShowToaster(string message, int timer)
+    {
+        _blazorStrap.Toaster.Add(message, o =>
+        {
+            o.CloseAfter = timer;
+            o.Toast = Toast.TopLeft;
+            o.Color = BSColor.Warning;
+        });
     }
 }

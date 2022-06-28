@@ -3,11 +3,14 @@
 
 <PageTitle>DatingApp.FrontEnd</PageTitle>
 
-<div class="page">
-    @*<div class="sidebar">
+@if (false) // TODO: Show only for authorized users 
+{
+    <div class="sidebar">
         <NavMenu />
-    </div>*@
+    </div>
+}
 
+<div class="page">
     <main>
         @*<div class="top-row px-4">
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
@@ -21,10 +24,10 @@
         {
             <footer>
                 <div class="footer footer-text-row">
-                <p>Copyright &copy;@DateTime.Now.Year |</p>
-                <a id="policy-link" class="btn-link" onclick="@OnPrivacyPolicyClick">Privacy Policy</a>
-            </div>
-        </footer>
+                    <p>Copyright &copy;@DateTime.Now.Year |</p>
+                    <a id="policy-link" class="btn-link" onclick="@OnPrivacyPolicyClick">Privacy Policy</a>
+                </div>
+            </footer>
         }
     </main>
 </div>
