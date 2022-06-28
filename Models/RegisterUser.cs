@@ -31,8 +31,9 @@ namespace DatingApp.FrontEnd.Models
 
         public string Interests { get; set; } = string.Empty;
 
-        //public string LookingFor { get; set; } = string.Empty;
-        //IEnumerable<PhotoDto> Photos,
+        public IFormFile MainPhoto { get; set; }
+
+        public bool HasMainPhoto { get => MainPhoto != null; }
 
         public string City { get; set; } = string.Empty;
 

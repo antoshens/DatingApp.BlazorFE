@@ -1,6 +1,7 @@
 @page "/Register"
 @using DatingApp.FrontEnd.Gateway.DotNetGateway
 @using DatingApp.FrontEnd.Models
+@using System.Net.Http.Headers
 
 @inject GatewayAdapter gtwAddapter;
 @inject NavigationManager NavigationManager;
@@ -16,7 +17,7 @@
         </div>
 
         <BSProgress>
-            <BSProgressBar Color="BSColor.Success" Value="@(currentStep * 50)"></BSProgressBar>
+            <BSProgressBar Color="BSColor.Success" Value="@(currentStep * 33.3)"></BSProgressBar>
         </BSProgress>
 
         <EditForm class="row" Model="@account" OnValidSubmit="@HandleValidSubmit">
@@ -68,7 +69,7 @@
                     <BSInput InputType="InputType.Password" placeholder="Repeat Password" @bind-Value="account.RepeatPassword" />
                 </div>
             }
-            else
+            else if(currentStep == 2)
             {
                 <div class="row form-control-row">
                     <BSInput InputType="InputType.Text" placeholder="Country" @bind-Value="account.Country" />
@@ -82,6 +83,12 @@
                     <BSInput InputType="InputType.TextArea" placeholder="About me" @bind-Value="account.Interests" />
                 </div>
             }
+            else
+            {
+                <div class="row form-control-row">
+                    <BSInputFile IsRequired="true" ValidWhen="@(() => account.HasMainPhoto)" accept=".png,.jpeg,.jpg" OnChange="OnFileChange" />
+                </div>
+            }
 
             <div class="@(currentStep > 1 ? "register-btn-grp" : "")">
                 @if (currentStep > 1)
@@ -92,7 +99,7 @@
                 }
 
                 <div class="form-control-row @(currentStep == 1 ? "row" : "col")">
-                    <button type="submit" id="register-btn" disabled="@(isRegistrationProcessing)" class="btn register-btn">@(currentStep == 1 ? "Next" : "Register")</button>
+                    <button type="submit" id="register-btn" disabled="@(isRegistrationProcessing)" class="btn register-btn">@(currentStep < maxStepsAmount ? "Next" : "Register")</button>
                 </div>
             </div>
         </EditForm>
@@ -103,18 +110,22 @@
 <BSToaster/>
 
 @code {
+    private const long maxFileSize = 1024 * 1024 * 15;
+
     RegisterUser account = new ();
     int currentStep = 1;
     bool isRegistrationProcessing;
+    const int maxStepsAmount = 3;
 
     void OnBackClick() => --currentStep;
 
     async Task HandleValidSubmit()
     {
-        if (currentStep == 2)
+        if (currentStep == maxStepsAmount)
         {
             isRegistrationProcessing = true;
             var response = await gtwAddapter.RegisterAsync(account);
+            // TODO: Add API call to upload main photo
             isRegistrationProcessing = false;
 
             if (response != null)
@@ -129,6 +140,24 @@
         }
 
         ++currentStep;
+    }
+
+    void OnFileChange(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount > 0)
+        {
+            var browserImage = e.File;
+
+            var fileContent = new StreamContent(browserImage.OpenReadStream(maxFileSize));
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(browserImage.ContentType);
+
+            using var content = new MultipartFormDataContent();
+            content.Add(content: fileContent,
+                    name: "\"photos\"",
+                    fileName: e.File.Name);
+
+            account.MainPhoto = (IFormFile)content;
+        }
     }
 
     private void ShowToaster(string message, int timer)
