@@ -16,9 +16,12 @@ namespace DatingApp.FrontEnd.Models.CurrentUser
             var FirstName = jwtSecurityToken.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.NameId)?.Value;
 
             var expires = jwtSecurityToken.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.Exp)?.Value;
-            if (!string.IsNullOrEmpty(expires) && DateTime.TryParse(expires, out var tokenExpiryDate))
+            if (!string.IsNullOrEmpty(expires) && int.TryParse(expires, out var tokenExpiryDate))
             {
-                IsLoggedIn = tokenExpiryDate < DateTime.UtcNow;
+                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                dateTime = dateTime.AddSeconds(1656862571).ToLocalTime();
+
+                IsLoggedIn = dateTime > DateTime.UtcNow;
             }
         }
     }
