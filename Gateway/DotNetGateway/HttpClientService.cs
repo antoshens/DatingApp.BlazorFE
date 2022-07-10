@@ -1,5 +1,6 @@
 ﻿using DatingApp.FrontEnd.Gateway.Configuration;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace DatingApp.FrontEnd.Gateway.DotNetGateway
@@ -90,6 +91,15 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
 #endif
 
                 return null;
+            }
+        }
+
+        public void SetAuthHeader(string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                var httpClient = _httpClientFactory.CreateClient("datingapp");
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", value);
             }
         }
     }
