@@ -94,7 +94,7 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
             }
         }
 
-        public void SetAuthHeader(string value)
+        public void SetAuthHeader(string? value)
         {
             if (!string.IsNullOrEmpty(value))
             {
