@@ -2,16 +2,16 @@
 @inherits LayoutComponentBase
 
 @inject NavigationManager NavigationManager
-@inject ICurrentUser _currentUser; 
 
 <PageTitle>DatingApp</PageTitle>
 
-@if (_currentUser.IsLoggedIn) 
-{
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-}
+<AuthorizeView>
+    <Authorized>
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 <div class="page">
     <main>

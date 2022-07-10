@@ -1,8 +1,12 @@
-﻿@page "/Login"
+﻿@page "/Login/{isRegistered:bool?}"
+
 @using DatingApp.FrontEnd.Gateway.DotNetGateway
 @using DatingApp.FrontEnd.Models
 @using DatingApp.FrontEnd.Models.CurrentUser
+@using Microsoft.AspNetCore.Components.Server
+@using System.Security.Claims
 
+@inject IHostEnvironmentAuthenticationStateProvider HostAuthentication
 @inject NavigationManager NavigationManager
 @inject GatewayAdapter gtwAdapter
 @inject ICurrentUser currentUser
@@ -46,21 +50,27 @@
                 <button type="submit" id="login-btn" disabled="@(isLogginProcessing)" class="btn login-btn">Sing in</button>
             </div>
 
-            <div class="row form-text-row">
-                <p>Don't have account?</p>
-                <a class="btn-link" @onclick="OnRegisterClick">Register Now</a>
-            </div>
+            @if(!IsRegistered)
+            {
+                <div class="row form-text-row">
+                    <p>Don't have account?</p>
+                    <a class="btn-link" @onclick="OnRegisterClick">Register Now</a>
+                </div>
+            }
         </EditForm>
     </div>
 </div>
 
 @*Warning toaster*@
-<BSToaster/>
+<BSToaster />
 
 @code {
     UserLogin userLogin = new();
     bool showWarning;
     bool isLogginProcessing;
+
+    [Parameter]
+    public bool IsRegistered { get; set; } = false;
 
     void OnRegisterClick()
     {
@@ -79,6 +89,8 @@
 
             if (currentUser.IsLoggedIn)
             {
+                HostAuthentication.SetAuthenticationState(Task.FromResult(new AuthenticationState(currentUser.ClaimsPrincipal)));
+
                 NavigationManager.NavigateTo("Dashboard");
             }
             else
