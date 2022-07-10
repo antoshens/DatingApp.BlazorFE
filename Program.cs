@@ -2,6 +2,9 @@ using BlazorStrap;
 using DatingApp.FrontEnd.Gateway.Configuration;
 using DatingApp.FrontEnd.Gateway.DotNetGateway;
 using DatingApp.FrontEnd.Models.CurrentUser;
+using DatingApp.FrontEnd.Infrastructure;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +51,17 @@ void ConfigureServices(ConfigurationManager config, IServiceCollection services)
     services.AddScoped<GatewayAdapter>();
 
     services.AddSingleton<ICurrentUser, CurrentUser>();
+
+    services.AddOptions();
+    services.AddAuthorizationCore();
+
+    services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<LoggedUserGateway>>();
+    services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp => {
+        // This is safe because 
+        // the `RevalidatingIdentityAuthenticationStateProvider` extends the `ServerAuthenticationStateProvider`
+        var provider = (ServerAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>();
+        return provider;
+    });
 }
 
 void ConfigureSettings(ConfigurationManager config, IServiceCollection services)
