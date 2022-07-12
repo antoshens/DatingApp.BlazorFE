@@ -112,3 +112,24 @@ div .not-found-button-container {
     display: flex;
     justify-content: center;
 }
+
+.card-div {
+    border-radius: 30px;
+    -webkit-box-shadow: -1px 4px 20px 0px rgb(0 0 0 / 75%);
+    -moz-box-shadow: -1px 4px 20px 0px rgba(0,0,0,0.75);
+}
+
+.action-icon:hover {
+    color: #fdc886;
+    cursor: pointer;
+}
+
+.action-success-icon:hover {
+    color: #63e0a9;
+    cursor: pointer;
+}
+
+.action-danger-icon:hover {
+    color: #e06386;
+    cursor: pointer;
+}

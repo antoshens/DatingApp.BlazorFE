@@ -1,0 +1,52 @@
+﻿@page "/Dashboard"
+
+@attribute [Authorize]
+
+<div class="member-cards-gallery">
+    @foreach (var item in IntArray)
+    {
+        <div>
+            <div class="col-lg-1 card-div member-card @(GetCurrentIndex(item) == 1 ? "innactive-card-first" : "") @(GetCurrentIndex(item) == 2 ? "innactive-card-second" : "")">
+                <div class="row member-photo">
+
+                    <div class="member-actions">
+                        <i class="far fa-heart fa-2x action-success-icon @(GetCurrentIndex(item) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnLikeClick(item)"></i>
+                        <i class="fas fa-heart-broken fa-2x action-danger-icon @(GetCurrentIndex(item) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnDislikeClick(item)"></i>
+                        <i class="far fa-folder-open fa-2x action-icon @(GetCurrentIndex(item) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnMoreInfoClick()"></i>
+                        <i class="far fa-paper-plane fa-2x action-icon @(GetCurrentIndex(item) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnChatClick()"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    // TODO: Make a real API calls on each action
+    public int[] IntArray = new int[] {1, 2, 3};
+
+    public void OnLikeClick(int index)
+    {
+        IntArray = IntArray.Where(it => it != index).ToArray();
+    }
+
+    public void OnDislikeClick(int index)
+    {
+        IntArray = IntArray.Where(it => it != index).ToArray();
+    }
+
+    public void OnChatClick()
+    {
+        // TODO: Redirect to the chat page
+    }
+
+    public void OnMoreInfoClick()
+    {
+        // TODO: Redirect to the member info page
+    }
+
+    public int GetCurrentIndex(object item)
+    {
+        return Array.IndexOf(IntArray, item);
+    }
+}
