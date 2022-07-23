@@ -5,8 +5,12 @@ using DatingApp.FrontEnd.Models.CurrentUser;
 using DatingApp.FrontEnd.Infrastructure;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
+using UserGateway = DatingApp.FrontEnd.Gateway.DotNetGateway.UserGateway;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+
+var origins = configuration["Origins"];
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -14,8 +18,8 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddBlazorStrap();
 
-ConfigureSettings(builder.Configuration, builder.Services);
-ConfigureServices(builder.Configuration, builder.Services);
+ConfigureSettings(configuration, builder.Services);
+ConfigureServices(configuration, builder.Services);
 
 var app = builder.Build();
 
@@ -33,6 +37,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors(_ => _.AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+    .WithOrigins(origins.Split(";")));
+
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
@@ -47,10 +56,17 @@ void ConfigureServices(ConfigurationManager config, IServiceCollection services)
     {
         cl.BaseAddress = new Uri(baseUrl);
     });
+
+    services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
     services.AddScoped<IHttpClientService, HttpClientService>();
+    services.AddScoped<IUserGateway, UserGateway>();
+    services.AddScoped<IMemberGateway, MemberGateway>();
     services.AddScoped<GatewayAdapter>();
 
-    services.AddSingleton<ICurrentUser, CurrentUser>();
+    services.AddScoped<ICurrentUser, CurrentUser>();
+
+    services.AddCors();
 
     services.AddOptions();
     services.AddAuthorizationCore();

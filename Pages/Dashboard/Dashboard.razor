@@ -1,19 +1,36 @@
 ﻿@page "/Dashboard"
+@using DatingApp.FrontEnd.Gateway.DotNetGateway
 
 @attribute [Authorize]
 
+@inject GatewayAdapter gtwAdapter;
+
 <div class="member-cards-gallery">
-    @foreach (var item in IntArray)
+    @foreach (var member in Members)
     {
         <div>
-            <div class="col-lg-1 card-div member-card @(GetCurrentIndex(item) == 1 ? "innactive-card-first" : "") @(GetCurrentIndex(item) == 2 ? "innactive-card-second" : "")">
+            <div class="col-lg-1 card-div member-card @(GetCurrentIndex(member) == 1 ? "innactive-card-first" : "") @(GetCurrentIndex(member) == 2 ? "innactive-card-second" : "")">
                 <div class="row member-photo">
 
+                    <div class="row member-details">
+                        <div class="row member-name">
+                            <h2>@member.FirstName&nbsp;@member.LastName</h2>
+                        </div>
+
+                        <div class="row member-age">
+                            <h4>@member.Age&nbsp;y.&nbsp;o.</h4>
+                        </div>
+
+                        <div class="row member-interests">
+                            <p class="interests-text">@member.Interests</p>
+                        </div>
+                    </div>
+
                     <div class="member-actions">
-                        <i class="far fa-heart fa-2x action-success-icon @(GetCurrentIndex(item) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnLikeClick(item)"></i>
-                        <i class="fas fa-heart-broken fa-2x action-danger-icon @(GetCurrentIndex(item) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnDislikeClick(item)"></i>
-                        <i class="far fa-folder-open fa-2x action-icon @(GetCurrentIndex(item) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnMoreInfoClick()"></i>
-                        <i class="far fa-paper-plane fa-2x action-icon @(GetCurrentIndex(item) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnChatClick()"></i>
+                        <i class="far fa-heart fa-2x action-success-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnLikeClick(member)"></i>
+                        <i class="fas fa-heart-broken fa-2x action-danger-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnDislikeClick(member)"></i>
+                        <i class="far fa-folder-open fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnMoreInfoClick()"></i>
+                        <i class="far fa-paper-plane fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnChatClick()"></i>
                     </div>
                 </div>
             </div>
@@ -22,17 +39,25 @@
 </div>
 
 @code {
-    // TODO: Make a real API calls on each action
-    public int[] IntArray = new int[] {1, 2, 3};
+    private int skip = 0;
+    private int take = 10;
 
-    public void OnLikeClick(int index)
+    public List<Member> Members { get; private set; } = new List<Member>();
+
+    protected override async Task OnInitializedAsync()
     {
-        IntArray = IntArray.Where(it => it != index).ToArray();
+        var result  = await gtwAdapter.GetAllMembersAsync(skip, take);
+        Members = result.ToList();
     }
 
-    public void OnDislikeClick(int index)
+    public void OnLikeClick(Member member)
     {
-        IntArray = IntArray.Where(it => it != index).ToArray();
+        Members = Members.Where(m => m.Id != member.Id).ToList();
+    }
+
+    public void OnDislikeClick(Member member)
+    {
+        Members = Members.Where(m => m.Id != member.Id).ToList();
     }
 
     public void OnChatClick()
@@ -45,8 +70,8 @@
         // TODO: Redirect to the member info page
     }
 
-    public int GetCurrentIndex(object item)
+    public int GetCurrentIndex(Member member)
     {
-        return Array.IndexOf(IntArray, item);
+        return Members.IndexOf(member);
     }
 }

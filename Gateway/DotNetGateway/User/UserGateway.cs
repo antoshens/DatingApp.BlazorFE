@@ -9,13 +9,8 @@
             _httpClientService = httpClientService;
         }
 
-        public async Task<LoggedUserGateway?> LoginAsync(UserLoginGateway login)
-        {
-            var response = await _httpClientService.SendPostAsync<LoggedUserGateway, UserLoginGateway>("auth/login", login, true);
-            _httpClientService.SetAuthHeader(response?.Token);
-            
-            return response;
-        }
+        public async Task<LoggedUserGateway?> LoginAsync(UserLoginGateway login) =>
+            await _httpClientService.SendPostAsync<LoggedUserGateway, UserLoginGateway>("auth/login", login, true);
 
         public async Task<GatewayModels.UserGateway?> RegisterAsync(GatewayModels.UserGateway user) =>
             await _httpClientService.SendPostAsync<GatewayModels.UserGateway, GatewayModels.UserGateway>("auth/register", user, true);

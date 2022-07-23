@@ -6,13 +6,17 @@
 
 .member-photo {
     height: 100%;
+    display: flex;
+    align-content: flex-end;
 }
 
 .member-actions {
+    height: 10%;
     display: flex;
     align-items: end;
     justify-content: space-around;
     margin-bottom: 10px;
+    align-self: end;
 }
 
 .hidden-member-actions {
@@ -60,6 +64,23 @@
     .innactive-card-second {
         display: none;
     }
+}
+
+.member-details {
+    display: flex;
+    justify-content: space-evenly;
+    height: 30%;
+    align-self: flex-end;
+    align-content: flex-start;
+}
+
+.member-interests {
+    height: 17%;
+}
+
+p.interests-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /*.move-card {

@@ -4,9 +4,9 @@ namespace DatingApp.FrontEnd.Models.CurrentUser
 {
     public interface ICurrentUser
     {
-        bool IsLoggedIn { get; }
-        string FirstName { get; }
-        ClaimsPrincipal ClaimsPrincipal { get; }
-        void SetCurrentUser(string token);
+        Task<bool> IsLoggedIn();
+        Task<string> GetFirstName();
+        Task<string> GetToken();
+        Task<ClaimsPrincipal> GetClaimsPrincipal(string? token = null);
     }
 }

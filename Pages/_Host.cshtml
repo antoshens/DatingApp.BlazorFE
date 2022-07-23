@@ -5,4 +5,18 @@
     Layout = "_Layout";
 }
 
+ <script>
+    window.WriteToken = {
+        WriteToken: function (name, value) {
+            sessionStorage.setItem(name, value);
+        }
+    }
+
+    window.ReadToken = {
+        ReadToken: function (name) {
+            return sessionStorage.getItem(name);
+        }
+    }
+</script>
+
 <component type="typeof(App)" render-mode="ServerPrerendered" />

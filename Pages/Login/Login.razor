@@ -11,6 +11,7 @@
 @inject GatewayAdapter gtwAdapter
 @inject ICurrentUser currentUser
 @inject IBlazorStrap _blazorStrap
+@inject IJSRuntime _jsRuntime
 
 <div class="row login-content">
     <div class="col-lg-1 login-main-diff">
@@ -85,11 +86,11 @@
 
         if (response != null)
         {
-            currentUser.SetCurrentUser(response.Token);
-
-            if (currentUser.IsLoggedIn)
+            if (!string.IsNullOrEmpty(response.Token))
             {
-                HostAuthentication.SetAuthenticationState(Task.FromResult(new AuthenticationState(currentUser.ClaimsPrincipal)));
+                await _jsRuntime.InvokeVoidAsync("WriteToken.WriteToken", "AUTH-TOKEN", response.Token);
+                var token = await currentUser.GetClaimsPrincipal(response.Token);
+                HostAuthentication.SetAuthenticationState(Task.FromResult(new AuthenticationState(token)));
 
                 NavigationManager.NavigateTo("Dashboard");
             }
