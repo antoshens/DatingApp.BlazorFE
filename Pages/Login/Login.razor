@@ -73,6 +73,19 @@
     [Parameter]
     public bool IsRegistered { get; set; } = false;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+#if DEBUG
+    userLogin = new UserLogin
+    {
+        Login = "antoshens",
+        Password = "Anton123"
+    };
+#endif
+    }
+
     void OnRegisterClick()
     {
         NavigationManager.NavigateTo("Register");
