@@ -32,22 +32,39 @@
 
 .innactive-card-first {
     filter: blur(5px);
-    height: 450px !important;
-    width: 370px !important;
+    height: calc(500px - 10vh) !important;
+    width: calc(420px - 5vw) !important;
     position: absolute;
-    left: 55vw;
-    bottom: 24vh;
+    left: calc(50% + 420px / 10);
+    bottom: calc(50% - 500px / 3);
     z-index: -1;
 }
 
 .innactive-card-second {
     filter: blur(7px);
-    height: 400px !important;
-    width: 320px !important;
+    height: calc(500px - 15vh) !important;
+    width: calc(420px - 5vw) !important;
     position: absolute;
-    left: 69vw;
-    bottom: 27vh;
+    left: calc(50% + 420px / 2);
+    bottom: calc(50% - 2 * 500px / 7);
     z-index: -2;
+}
+
+.no-members-img-container {
+    padding-top: 10vh;
+    text-align: center;
+}
+
+.no-member-image {
+    color: indianred;
+}
+
+.no-members-msg-container {
+    height: 50%;
+    width: 100%;
+    display: flex;
+    align-content: center;
+    text-align: center;
 }
 
 @media screen and (max-width: 1222px) {

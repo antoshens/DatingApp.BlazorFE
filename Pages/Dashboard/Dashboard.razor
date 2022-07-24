@@ -6,6 +6,14 @@
 @inject GatewayAdapter gtwAdapter;
 
 <div class="member-cards-gallery">
+    @*Spinner*@
+    @if (isShowSpinner)
+    {
+        <div class="spinner-div">
+            <BSSpinner id="spinner" Class="spinner" Color="BSColor.Warning" Size="Size.ExtraLarge" />
+        </div>
+    }
+
     @foreach (var member in Members)
     {
         <div>
@@ -36,6 +44,21 @@
             </div>
         </div>
     }
+
+    @*No suggested members*@
+    @if (!isShowSpinner && Members.Count == 0)
+    {
+        <div class="col-lg-1 card-div member-card">
+            <div class="row no-members-img-container">
+                <i class="fa-solid fa-ban fa-10x no-member-image"></i>
+            </div>
+
+            <div class="row no-members-msg-container">
+                <h4>Sorry, currently there are no matches for you <i class="fa-regular fa-face-frown-open"></i></h4>
+                <p>Try to come back later!</p>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
@@ -43,11 +66,16 @@
     private int take = 10;
 
     public List<Member> Members { get; private set; } = new List<Member>();
+    public bool isShowSpinner;
 
     protected override async Task OnInitializedAsync()
     {
+        isShowSpinner = true;
+
         var result  = await gtwAdapter.GetAllMembersAsync(skip, take);
         Members = result.ToList();
+
+        isShowSpinner = false;
     }
 
     public void OnLikeClick(Member member)
