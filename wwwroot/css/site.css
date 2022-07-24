@@ -78,6 +78,7 @@ a:hover, .btn-link:hover {
 div .spinner-div {
     display: flex;
     justify-content: center;
+    z-index: 2;
 }
 
 div .spinner {

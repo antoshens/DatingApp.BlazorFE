@@ -1,9 +1,14 @@
-﻿<div @onclick="ToggleNavMenu">
+﻿@using DatingApp.FrontEnd.Models.CurrentUser;
+
+@inject ICurrentUser _currentUser;
+
+<div @onclick="ToggleNavMenu">
     <BSNav Justify="Justify.End">
         <BSNavItem IsActive="isActive">Find you destiny</BSNavItem>
         <BSNavItem>Chats</BSNavItem>
         <BSNavItem>Likes</BSNavItem>
-        <BSNavItem>Account</BSNavItem>
+        <BSNavItem title="Account">Welcome, @userName&nbsp;<i class="fa-regular fa-circle-user"></i></BSNavItem>
+        <BSNavItem title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></BSNavItem>
     </BSNav>
 </div>
 
@@ -17,5 +22,14 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    public string userName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        userName = await _currentUser.GetFirstNameAsync();
     }
 }
