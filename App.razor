@@ -1,10 +1,21 @@
-﻿@inject NavigationManager _navigationManager;
+﻿@using DatingApp.FrontEnd.Models.CurrentUser;
+
+@inject NavigationManager _navigationManager;
+@inject IHostEnvironmentAuthenticationStateProvider _hostAuthentication;
+@inject ICurrentUser _currentUser;
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>
+                    <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+                </Authorizing>
+
+                <NotAuthorized>
+                    <DatingApp.FrontEnd.Pages.Login.Login></DatingApp.FrontEnd.Pages.Login.Login>
+                </NotAuthorized>
+            </AuthorizeRouteView>
         </Found>
 
         <NotFound>
@@ -25,6 +36,14 @@
 </CascadingAuthenticationState>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var token = await _currentUser.GetClaimsPrincipalAsync();
+        _hostAuthentication.SetAuthenticationState(Task.FromResult(new AuthenticationState(token)));
+    }
+
     void OnGoHomeClick()
     {
         _navigationManager.NavigateTo("Dashboard");

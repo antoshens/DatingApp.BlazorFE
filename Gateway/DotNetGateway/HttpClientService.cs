@@ -41,9 +41,9 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
 
                 _logger.LogInformation($"Sending POST request to {_options.BaseUrl}{fullUrl}.");
 
-                if (await _currentUser.IsLoggedIn())
+                if (await _currentUser.IsLoggedInAsync())
                 {
-                    SetAuthHeader(await _currentUser.GetToken());
+                    SetAuthHeader(await _currentUser.GetTokenAsync());
                 }
 
                 var response = await _httpClient.GetAsync(fullUrl);
@@ -92,9 +92,9 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
             {
                 var fullUrl = $"/api/{url}";
 
-                if (await _currentUser.IsLoggedIn())
+                if (await _currentUser.IsLoggedInAsync())
                 {
-                    SetAuthHeader(await _currentUser.GetToken());
+                    SetAuthHeader(await _currentUser.GetTokenAsync());
                 }
 
                 string content;

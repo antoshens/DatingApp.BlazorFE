@@ -17,7 +17,7 @@ namespace DatingApp.FrontEnd.Infrastructure
 
         protected override Task<bool> ValidateAuthenticationStateAsync(AuthenticationState authenticationState, CancellationToken cancellationToken)
         {
-            return _currentUser.IsLoggedIn();
+            return _currentUser.IsLoggedInAsync();
         }
     }
 }

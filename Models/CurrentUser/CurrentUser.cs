@@ -1,26 +1,26 @@
-﻿using Microsoft.JSInterop;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace DatingApp.FrontEnd.Models.CurrentUser
 {
     public class CurrentUser : ICurrentUser
     {
-        private readonly IJSRuntime _jsRuntime;
+        private readonly ProtectedSessionStorage _protectedSessionStore;
 
-        public CurrentUser(IJSRuntime jsRuntime)
+        public CurrentUser(ProtectedSessionStorage protectedSessionStore)
         {
-            this._jsRuntime = jsRuntime;
+            _protectedSessionStore = protectedSessionStore;
         }
 
-        public async Task<bool> IsLoggedIn()
+        public async Task<bool> IsLoggedInAsync()
         {
-            var tokenValue = await _jsRuntime.InvokeAsync<string>("ReadToken.ReadToken", "AUTH-TOKEN");
+            var tokenValue = await _protectedSessionStore.GetAsync<string>("AUTH-TOKEN");
 
-            if (string.IsNullOrEmpty(tokenValue)) return false;
+            if (string.IsNullOrEmpty(tokenValue.Value)) return false;
 
             var handler = new JwtSecurityTokenHandler();
-            var jwsToken = handler.ReadJwtToken(tokenValue);
+            var jwsToken = handler.ReadJwtToken(tokenValue.Value);
 
             var expires = jwsToken.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.Exp)?.Value;
             if (!string.IsNullOrEmpty(expires) && int.TryParse(expires, out var tokenExpiryDate))
@@ -34,31 +34,31 @@ namespace DatingApp.FrontEnd.Models.CurrentUser
             return false;
         }
 
-        public async Task<string> GetFirstName()
+        public async Task<string> GetFirstNameAsync()
         {
-            var tokenValue = await _jsRuntime.InvokeAsync<string>("ReadToken.ReadToken", "AUTH-TOKEN");
+            var tokenValue = await _protectedSessionStore.GetAsync<string>("AUTH-TOKEN");
 
-            if (string.IsNullOrEmpty(tokenValue)) return string.Empty;
+            if (string.IsNullOrEmpty(tokenValue.Value)) return string.Empty;
 
             var handler = new JwtSecurityTokenHandler();
-            var jwsToken = handler.ReadJwtToken(tokenValue);
+            var jwsToken = handler.ReadJwtToken(tokenValue.Value);
 
             return jwsToken.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.NameId)?.Value ?? string.Empty;
         }
 
-        public async Task<string> GetToken()
+        public async Task<string> GetTokenAsync()
         {
-            var tokenValue = await _jsRuntime.InvokeAsync<string>("ReadToken.ReadToken", "AUTH-TOKEN");
+            var tokenValue = await _protectedSessionStore.GetAsync<string>("AUTH-TOKEN");
 
-            if (string.IsNullOrEmpty(tokenValue)) return string.Empty;
+            if (string.IsNullOrEmpty(tokenValue.Value)) return string.Empty;
 
             var handler = new JwtSecurityTokenHandler();
-            var jwsToken = handler.ReadJwtToken(tokenValue);
+            var jwsToken = handler.ReadJwtToken(tokenValue.Value);
 
             return jwsToken.RawData;
         }
 
-        public async Task<ClaimsPrincipal> GetClaimsPrincipal(string? token = null)
+        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string? token = null)
         {
             var handler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwsToken;
@@ -69,11 +69,11 @@ namespace DatingApp.FrontEnd.Models.CurrentUser
             }
             else
             {
-                var tokenValue = await _jsRuntime.InvokeAsync<string>("ReadToken.ReadToken", "AUTH-TOKEN");
+                var tokenValue = await _protectedSessionStore.GetAsync<string>("AUTH-TOKEN");
 
-                if (string.IsNullOrEmpty(tokenValue)) return new ClaimsPrincipal();
+                if (string.IsNullOrEmpty(tokenValue.Value)) return new ClaimsPrincipal();
 
-                jwsToken = handler.ReadJwtToken(tokenValue);
+                jwsToken = handler.ReadJwtToken(tokenValue.Value);
             }
 
             var identity = new ClaimsIdentity(

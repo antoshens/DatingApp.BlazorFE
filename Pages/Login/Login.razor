@@ -5,13 +5,14 @@
 @using DatingApp.FrontEnd.Models.CurrentUser
 @using Microsoft.AspNetCore.Components.Server
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 @inject IHostEnvironmentAuthenticationStateProvider HostAuthentication
 @inject NavigationManager NavigationManager
 @inject GatewayAdapter gtwAdapter
 @inject ICurrentUser currentUser
 @inject IBlazorStrap _blazorStrap
-@inject IJSRuntime _jsRuntime
+@inject ProtectedSessionStorage _protectedSessionStorage;
 
 <div class="row login-content">
     <div class="col-lg-1 login-main-diff">
@@ -101,8 +102,8 @@
         {
             if (!string.IsNullOrEmpty(response.Token))
             {
-                await _jsRuntime.InvokeVoidAsync("WriteToken.WriteToken", "AUTH-TOKEN", response.Token);
-                var token = await currentUser.GetClaimsPrincipal(response.Token);
+                await _protectedSessionStorage.SetAsync("AUTH-TOKEN", response.Token);
+                var token = await currentUser.GetClaimsPrincipalAsync(response.Token);
                 HostAuthentication.SetAuthenticationState(Task.FromResult(new AuthenticationState(token)));
 
                 NavigationManager.NavigateTo("Dashboard");
