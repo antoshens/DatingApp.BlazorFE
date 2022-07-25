@@ -1,8 +1,10 @@
-﻿@using DatingApp.FrontEnd.Models.CurrentUser;
+﻿@using DatingApp.FrontEnd.Infrastructure
+@using DatingApp.FrontEnd.Models.CurrentUser;
 
 @inject NavigationManager _navigationManager;
-@inject IHostEnvironmentAuthenticationStateProvider _hostAuthentication;
+@inject IAuthenticationStateHandler _authStateHandler;
 @inject ICurrentUser _currentUser;
+@inject IHostEnvironmentAuthenticationStateProvider _hostAuthentication;
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
@@ -13,7 +15,9 @@
                 </Authorizing>
 
                 <NotAuthorized>
-                    <DatingApp.FrontEnd.Pages.Login.Login></DatingApp.FrontEnd.Pages.Login.Login>
+                    @{
+                        OnNotAuthorizedRedirect();
+                    }
                 </NotAuthorized>
             </AuthorizeRouteView>
         </Found>
@@ -36,12 +40,43 @@
 </CascadingAuthenticationState>
 
 @code {
+    public bool IsAuthorized { get; set; }
+    public bool IsFirstRender { get; set; } = true;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        await _authStateHandler.UpdateState();
 
-        var token = await _currentUser.GetClaimsPrincipalAsync();
-        _hostAuthentication.SetAuthenticationState(Task.FromResult(new AuthenticationState(token)));
+        IsFirstRender = false;
+
+        _navigationManager.LocationChanged += async (object sender, LocationChangedEventArgs e) =>
+        {
+            if (sender is null)
+            {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
+            if (e is null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
+            
+            IsAuthorized = await _currentUser.IsLoggedInAsync();
+            if (IsAuthorized && (e.Location == _navigationManager.BaseUri || e.Location.Contains("Login") || e.Location.Contains("Register")))
+            {
+                _navigationManager.NavigateTo("Dashboard");
+            }
+        };
+    }
+
+    public void OnNotAuthorizedRedirect()
+    {
+        if (!IsFirstRender && !IsAuthorized)
+        {
+            _navigationManager.NavigateTo("Login");
+        }
     }
 
     void OnGoHomeClick()

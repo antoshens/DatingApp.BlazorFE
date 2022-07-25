@@ -1,28 +1,24 @@
-﻿@using DatingApp.FrontEnd.Models.CurrentUser;
+﻿@using DatingApp.FrontEnd.Infrastructure
+@using DatingApp.FrontEnd.Models.CurrentUser;
 
 @inject ICurrentUser _currentUser;
+@inject IAuthenticationStateHandler _authStateHandler;
+@inject NavigationManager _navigationManager;
 
-<div @onclick="ToggleNavMenu">
+<div>
     <BSNav Justify="Justify.End">
         <BSNavItem IsActive="isActive">Find you destiny</BSNavItem>
         <BSNavItem>Chats</BSNavItem>
         <BSNavItem>Likes</BSNavItem>
         <BSNavItem title="Account">Welcome, @userName&nbsp;<i class="fa-regular fa-circle-user"></i></BSNavItem>
-        <BSNavItem title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></BSNavItem>
+        <BSNavItem title="Logout" Target="logoutConfirmation"><i class="fa-solid fa-arrow-right-from-bracket"></i></BSNavItem>
     </BSNav>
 </div>
 
+<ConfirmationDialog Id="logoutConfirmation" Message="Do you want to log out from the system?" OnConfirmClick=OnLogoutConfirmed></ConfirmationDialog>
+
 @code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
     private bool isActive = false;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
 
     public string userName;
 
@@ -31,5 +27,12 @@
         await base.OnInitializedAsync();
 
         userName = await _currentUser.GetFirstNameAsync();
+    }
+
+    public void OnLogoutConfirmed()
+    {
+        _authStateHandler.DeleteToken();
+        _authStateHandler.UpdateState();
+        _navigationManager.NavigateTo("Login");
     }
 }

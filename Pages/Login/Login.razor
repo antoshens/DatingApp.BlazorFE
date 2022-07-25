@@ -1,18 +1,16 @@
 ﻿@page "/Login/{isRegistered:bool?}"
 
 @using DatingApp.FrontEnd.Gateway.DotNetGateway
+@using DatingApp.FrontEnd.Infrastructure
 @using DatingApp.FrontEnd.Models
 @using DatingApp.FrontEnd.Models.CurrentUser
 @using Microsoft.AspNetCore.Components.Server
 @using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
-@inject IHostEnvironmentAuthenticationStateProvider HostAuthentication
 @inject NavigationManager NavigationManager
 @inject GatewayAdapter gtwAdapter
-@inject ICurrentUser currentUser
 @inject IBlazorStrap _blazorStrap
-@inject ProtectedSessionStorage _protectedSessionStorage;
+@inject IAuthenticationStateHandler _authStateHandler;
 
 <div class="row login-content">
     <div class="col-lg-1 login-main-diff">
@@ -83,8 +81,8 @@
 #if DEBUG
     userLogin = new UserLogin
     {
-        Login = "antoshens",
-        Password = "Anton123"
+    Login = "antoshens",
+    Password = "Anton123"
     };
 #endif
     }
@@ -104,9 +102,8 @@
         {
             if (!string.IsNullOrEmpty(response.Token))
             {
-                await _protectedSessionStorage.SetAsync("AUTH-TOKEN", response.Token);
-                var token = await currentUser.GetClaimsPrincipalAsync(response.Token);
-                HostAuthentication.SetAuthenticationState(Task.FromResult(new AuthenticationState(token)));
+                await _authStateHandler.WriteToken(response.Token);
+                await _authStateHandler.UpdateState();
 
                 NavigationManager.NavigateTo("Dashboard");
             }

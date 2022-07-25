@@ -134,3 +134,17 @@ div .not-found-button-container {
     color: #e06386;
     cursor: pointer;
 }
+
+button.btn-success {
+    background-color: #fdc886 !important;
+    border-color: #fdc886 !important;
+}
+
+button.btn-success:hover {
+    background-color: #e79b3c !important;
+    border-color: #e79b3c !important;
+}
+
+button.btn-success:active {
+    border-color: #e79b3c !important;
+}

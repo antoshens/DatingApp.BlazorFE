@@ -1,0 +1,20 @@
+﻿<BSModal DataId=@Id  IsStaticBackdrop="true" IsCentered="true">
+    <Header>Are you sure?</Header>
+    <Content>@Message</Content>
+    <Footer Context="modal">
+        <BSButton MarginStart="Margins.Auto" Color="BSColor.Secondary" @onclick="modal.HideAsync">Close</BSButton>
+        <BSButton Color="BSColor.Success" OnClick=OnConfirmClick>OK</BSButton>
+    </Footer>
+</BSModal>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string Message { get; set; }
+
+    [Parameter]
+    public Action OnConfirmClick { get; set; }
+}

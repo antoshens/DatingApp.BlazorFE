@@ -64,6 +64,7 @@ void ConfigureServices(ConfigurationManager config, IServiceCollection services)
     services.AddScoped<IMemberGateway, MemberGateway>();
     services.AddScoped<GatewayAdapter>();
 
+    services.AddScoped<IAuthenticationStateHandler, AuthenticationStateHandler>();
     services.AddScoped<ICurrentUser, CurrentUser>();
 
     services.AddCors();
