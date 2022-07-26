@@ -4,10 +4,11 @@
 @attribute [Authorize]
 
 @inject GatewayAdapter gtwAdapter;
+@inject IJSRuntime _jsRuntime;
 
 <div class="member-cards-gallery">
     @*Spinner*@
-    @if (isShowSpinner)
+    @if (showMainSpinner)
     {
         <div class="spinner-div">
             <BSSpinner id="spinner" Class="spinner" Color="BSColor.Warning" Size="Size.ExtraLarge" />
@@ -34,11 +35,16 @@
                         </div>
                     </div>
 
+                    @if (showUserSpinner)
+                    {
+                        <i class="fa-solid fa-xl fa-spinner fa-spin-pulse fa-spin-reverse user-spinner"></i>
+                    }
+
                     <div class="member-actions">
-                        <i class="far fa-heart fa-2x action-success-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnLikeClick(member)"></i>
-                        <i class="fas fa-heart-broken fa-2x action-danger-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnDislikeClick(member)"></i>
-                        <i class="far fa-folder-open fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnMoreInfoClick()"></i>
-                        <i class="far fa-paper-plane fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onclick="() => OnChatClick()"></i>
+                        <i id="user-like" class="far fa-heart fa-2x action-success-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-like")' @onmouseleave='() => OnActionHover("user-like")' @onclick="() => OnLikeClick(member)"></i>
+                        <i id="user-dislike" class="fas fa-heart-broken fa-2x action-danger-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-dislike")' @onmouseleave='() => OnActionHover("user-dislike")' @onclick="() => OnDislikeClick(member)"></i>
+                        <i id="user-info" class="far fa-folder-open fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-info")' @onmouseleave='() => OnActionHover("user-info")' @onclick="() => OnMoreInfoClick()"></i>
+                        <i id="user-chat" class="far fa-paper-plane fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-chat")' @onmouseleave='() => OnActionHover("user-chat")' @onclick="() => OnChatClick()"></i>
                     </div>
                 </div>
             </div>
@@ -46,7 +52,7 @@
     }
 
     @*No suggested members*@
-    @if (!isShowSpinner && Members.Count == 0)
+    @if (!showMainSpinner && Members.Count == 0)
     {
         <div class="col-lg-1 card-div member-card">
             <div class="row no-members-img-container">
@@ -66,21 +72,26 @@
     private int take = 10;
 
     public List<Member> Members { get; private set; } = new List<Member>();
-    public bool isShowSpinner;
+    public bool showMainSpinner;
+    public bool showUserSpinner;
 
     protected override async Task OnInitializedAsync()
     {
-        isShowSpinner = true;
+        showMainSpinner = true;
 
         var result  = await gtwAdapter.GetAllMembersAsync(skip, take);
         Members = result.ToList();
 
-        isShowSpinner = false;
+        showMainSpinner = false;
     }
 
     public async Task OnLikeClick(Member member)
     {
+        showUserSpinner = true;
+
         var likedUserId = await gtwAdapter.LikeUserAsync(member.Id);
+
+        showUserSpinner = false;
 
         if (likedUserId > 0)
         {
@@ -95,7 +106,11 @@
 
     public async Task OnDislikeClick(Member member)
     {
+        showUserSpinner = true;
+
         await gtwAdapter.DislikeUserAsync(member.Id);
+
+        showUserSpinner = false;
 
         // Drop member from the list at any case,
         // since user do not want to see them
@@ -122,16 +137,21 @@
         return Members.IndexOf(member);
     }
 
+    public async Task OnActionHover(string elementId)
+    {
+        await _jsRuntime.InvokeVoidAsync("Animation.SetAnimation", elementId);
+    }
+
     private async Task GetNextSuggestedMembers()
     {
         skip = take;
         take += take;
 
-        isShowSpinner = true;
+        showMainSpinner = true;
 
         var result  = await gtwAdapter.GetAllMembersAsync(skip, take);
         Members.AddRange(result.ToList());
 
-        isShowSpinner = false;
+        showMainSpinner = false;
     }
 }

@@ -17,6 +17,19 @@
             return sessionStorage.getItem(name);
         }
     }
+
+    window.Animation = {
+        SetAnimation: function (tagId) {
+            let element = document.getElementById(tagId);
+            console.log(element.classList)
+            if (element.classList.contains("fa-beat")) {
+                element.classList.remove("fa-beat");
+            }
+            else {
+                element.classList += " fa-beat";
+            }
+        }
+    }
 </script>
 
 <component type="typeof(App)" render-mode="Server" />

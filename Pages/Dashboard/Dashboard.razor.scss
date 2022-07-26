@@ -100,6 +100,14 @@ p.interests-text {
     text-overflow: ellipsis;
 }
 
+.user-spinner {
+    padding-left: 0px;
+    width: 25px;
+    padding-right: 0px;
+    margin-left: calc(420px - 50%);
+    color: #fdc886;
+}
+
 /*.move-card {
     -webkit-animation-name: moveCardAnimation;
     -webkit-animation-duration: 3s;
