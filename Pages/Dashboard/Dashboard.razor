@@ -78,14 +78,33 @@
         isShowSpinner = false;
     }
 
-    public void OnLikeClick(Member member)
+    public async Task OnLikeClick(Member member)
     {
-        Members = Members.Where(m => m.Id != member.Id).ToList();
+        var likedUserId = await gtwAdapter.LikeUserAsync(member.Id);
+
+        if (likedUserId > 0)
+        {
+            Members = Members.Where(m => m.Id != member.Id).ToList();
+        }
+
+        if (Members.Count == 1)
+        {
+            await GetNextSuggestedMembers();
+        }
     }
 
-    public void OnDislikeClick(Member member)
+    public async Task OnDislikeClick(Member member)
     {
+        await gtwAdapter.DislikeUserAsync(member.Id);
+
+        // Drop member from the list at any case,
+        // since user do not want to see them
         Members = Members.Where(m => m.Id != member.Id).ToList();
+
+        if (Members.Count == 1)
+        {
+            await GetNextSuggestedMembers();
+        }
     }
 
     public void OnChatClick()
@@ -101,5 +120,18 @@
     public int GetCurrentIndex(Member member)
     {
         return Members.IndexOf(member);
+    }
+
+    private async Task GetNextSuggestedMembers()
+    {
+        skip = take;
+        take += take;
+
+        isShowSpinner = true;
+
+        var result  = await gtwAdapter.GetAllMembersAsync(skip, take);
+        Members.AddRange(result.ToList());
+
+        isShowSpinner = false;
     }
 }

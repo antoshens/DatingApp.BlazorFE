@@ -11,5 +11,9 @@
 
         public async Task<IEnumerable<Member>> GetAllMembersAsync(int skip, int take) =>
             await _httpClientService.SendGetAsync<IEnumerable<Member>>($"user/members?skip={skip}&take={take}") ?? Enumerable.Empty<Member>();
+        
+        public async Task<int> LikeMemberAsync(int userId) => await _httpClientService.SendPostAsync<int>($"user/likeUser/{userId}");
+
+        public async Task<int> DislikeMemberAsync(int userId) => await _httpClientService.SendPostAsync<int>($"user/unlikeUser/{userId}");
     }
 }

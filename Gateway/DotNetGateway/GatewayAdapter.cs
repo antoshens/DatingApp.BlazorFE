@@ -38,5 +38,15 @@
 
             return response;
         }
+
+        public async Task<int> LikeUserAsync(int userId)
+        {
+            return await _memberGateway.LikeMemberAsync(userId);
+        }
+
+        public async Task<int> DislikeUserAsync(int userId)
+        {
+            return await _memberGateway.DislikeMemberAsync(userId);
+        }
     }
 }
