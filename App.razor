@@ -73,7 +73,9 @@
 
     public void OnNotAuthorizedRedirect()
     {
-        if (!IsFirstRender && !IsAuthorized)
+        var location = _navigationManager.Uri;
+
+        if (!IsFirstRender && !IsAuthorized && !location.Contains("Register"))
         {
             _navigationManager.NavigateTo("Login");
         }
