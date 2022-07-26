@@ -55,17 +55,10 @@ p {
     margin-left: 0px;
 }
 
-.login-btn {
-    background-color: #fdc886 !important;
-    width: 80%;
-    margin: auto;
-}
-
 %validation-padding {
     padding-left: calc(var(--bs-gutter-x) * 1.5) !important;
 }
 
 ul.validation-errors {
-    //@extend %validation-padding;
     padding-left: calc(var(--bs-gutter-x) * 1.5) !important;
 }

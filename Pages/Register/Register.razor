@@ -107,7 +107,7 @@
                 }
 
                 <div class="form-control-row @(currentStep == 1 ? "row" : "col")">
-                    <button type="submit" id="register-btn" disabled="@(isRegistrationProcessing)" class="btn register-btn">@(currentStep < maxStepsAmount ? "Next" : "Register")</button>
+                    <BSButton type="submit" id="register-btn"  Color="BSColor.Success" Class="register-btn" disabled="@(isRegistrationProcessing)">@(currentStep < maxStepsAmount ? "Next" : "Register")</BSButton>
                 </div>
             </div>
         </EditForm>
