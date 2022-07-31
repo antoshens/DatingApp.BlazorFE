@@ -11,6 +11,7 @@
         public string City { get; set; }
         public string Country { get; set; }
         public int Age { get; set; }
+        public Gender Gender { get; set; }
         public IEnumerable<UserPhoto> Photos { get; set; }
     }
 }

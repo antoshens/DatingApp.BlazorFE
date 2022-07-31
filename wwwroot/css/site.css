@@ -130,6 +130,11 @@ div .not-found-button-container {
     cursor: pointer;
 }
 
+.action-info-icon:hover {
+    color: #96cbf9;
+    cursor: pointer;
+}
+
 .action-danger-icon:hover {
     color: #e06386;
     cursor: pointer;
@@ -163,4 +168,30 @@ button.login-btn {
 button.register-btn {
     width: 80%;
     margin: auto;
+}
+
+.member-details-modal > div.modal-dialog > div.modal-content {
+    height: 65vh !important;
+    border-radius: 20px !important;
+    border: none !important;
+}
+
+@media screen and (max-width: 996px) {
+    .member-details-modal > div.modal-dialog > div.modal-content {
+        height: 90vh !important;
+        border-radius: 20px !important;
+        border: none !important;
+    }
+}
+
+.member-details-modal > div.modal-dialog {
+    max-width: 60vw !important;
+}
+
+div.carousel-inner {
+    border-radius: 20px !important;
+}
+
+.divider {
+    color: #bca9a9;
 }

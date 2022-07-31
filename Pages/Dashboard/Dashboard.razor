@@ -41,10 +41,17 @@
                     }
 
                     <div class="member-actions">
-                        <i id="user-like" class="far fa-heart fa-2x action-success-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-like")' @onmouseleave='() => OnActionHover("user-like")' @onclick="() => OnLikeClick(member)"></i>
-                        <i id="user-dislike" class="fas fa-heart-broken fa-2x action-danger-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-dislike")' @onmouseleave='() => OnActionHover("user-dislike")' @onclick="() => OnDislikeClick(member)"></i>
-                        <i id="user-info" class="far fa-folder-open fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-info")' @onmouseleave='() => OnActionHover("user-info")' @onclick="() => OnMoreInfoClick()"></i>
-                        <i id="user-chat" class="far fa-paper-plane fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-chat")' @onmouseleave='() => OnActionHover("user-chat")' @onclick="() => OnChatClick()"></i>
+                        <BSButton DataId="Like" style="padding: 0; border: 0;"><i id="user-like" class="far fa-heart fa-2x action-success-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-like")' @onmouseleave='() => OnActionHover("user-like")' @onclick="() => OnLikeClick(member)"></i></BSButton>
+                        <BSTooltip Placement="Placement.Bottom" Target="Like">Like</BSTooltip>
+
+                        <BSButton DataId="Dislike" style="padding: 0; border: 0;"><i id="user-dislike" class="fas fa-heart-broken fa-2x action-danger-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-dislike")' @onmouseleave='() => OnActionHover("user-dislike")' @onclick="() => OnDislikeClick(member)"></i></BSButton>
+                        <BSTooltip Placement="Placement.Bottom" Target="Dislike">Dislike</BSTooltip>
+
+                        <BSButton DataId="Details" Target="MemberDetailsModal" style="padding: 0; border: 0;"><i id="user-info" class="far fa-folder-open fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-info")' @onmouseleave='() => OnActionHover("user-info")' @onclick="() => OnMoreInfoClick(member)"></i></BSButton>
+                        <BSTooltip Placement="Placement.Bottom" Target="Details">More Details</BSTooltip>
+                        
+                        <BSButton DataId="Chat" style="padding: 0; border: 0;"><i id="user-chat" class="far fa-paper-plane fa-2x action-info-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-chat")' @onmouseleave='() => OnActionHover("user-chat")' @onclick="() => OnChatClick()"></i></BSButton>
+                        <BSTooltip Placement="Placement.Bottom" Target="Chat">Start Chatting</BSTooltip>
                     </div>
                 </div>
             </div>
@@ -67,13 +74,17 @@
     }
 </div>
 
+@*Member details modal*@
+<MemberDetails Id="MemberDetailsModal" ObservedMember="SelectedMember" OnActionHover="OnActionHover" OnLikeClick="OnLikeClick" OnDislikeClick="OnDislikeClick" OnChatClick="OnChatClick"></MemberDetails>
+
 @code {
     private int skip = 0;
     private int take = 10;
 
     public List<Member> Members { get; private set; } = new List<Member>();
-    public bool showMainSpinner;
-    public bool showUserSpinner;
+    public bool showMainSpinner { get; set; }
+    public bool showUserSpinner { get; set; }
+    public Member SelectedMember { get; private set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -127,9 +138,9 @@
         // TODO: Redirect to the chat page
     }
 
-    public void OnMoreInfoClick()
+    public void OnMoreInfoClick(Member member)
     {
-        // TODO: Redirect to the member info page
+        SelectedMember = member;
     }
 
     public int GetCurrentIndex(Member member)

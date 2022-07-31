@@ -26,6 +26,14 @@
       <ComponentScssFiles Include="**/*/*.scss" Exclude="node_modules/**;wwwroot/**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ComponentScssFiles Remove="Pages\Dashboard\MemberDetails.razor.scss" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="Pages\Dashboard\MemberDetails.razor.scss" />
+  </ItemGroup>
+
   <!-- Compile SCSS files into CSS -->
   <Target Name="CompileComponentSass" BeforeTargets="Compile">
     <Message Text="Compiling all components' SCSS files" Importance="high" />

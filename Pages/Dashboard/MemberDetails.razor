@@ -1,0 +1,151 @@
+﻿@inject IBlazorStrap _blazorStrap
+
+<BSModal DataId=@Id IsCentered="true" Class="member-details-modal">
+    <Content>
+        <div id="details-container" class="row">
+            <div id="main-info-container" class="col-lg">
+                <div id="color-background"></div>
+
+                <div id="member-avatar" style='background-color: @(ObservedMember?.Gender == Gender.Male ? "#02635da3" : ObservedMember?.Gender == Gender.Female ? "#630202a3" : "#7d4003b0")'>
+                    <div class="photo">
+                        @{
+                            var mainPhoto = ObservedMember?.Photos.FirstOrDefault(p => p.IsMain);
+                        }
+
+                        @if (mainPhoto is null)
+                        {
+                            <svg class="bd-placeholder-img photo" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
+                                <rect width="100%" height="100%" fill="#777"></rect>
+                            </svg>
+                        }
+                        else
+                        {
+                            
+                        }
+                    </div>
+                </div>
+
+                <div id="member-info">
+                    <div class="row">
+                        <h4>@ObservedMember?.FirstName&nbsp;@ObservedMember?.LastName</h4>
+                    </div>
+
+                    <hr class="divider"/>
+
+                    <div class="row">
+                        <div class="col info">
+                            <h6>Age:&nbsp;</h6>
+                            <span>@ObservedMember?.Age</span>
+                        </div>
+
+                        <div class="col info">
+                            <h6>Gender:&nbsp;</h6>
+                            <span>@ObservedMember?.Gender</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col info">
+                            <h6>Country:&nbsp;</h6>
+                            <span>@ObservedMember?.Country</span>
+                        </div>
+
+                        <div class="col info">
+                            <h6>City:&nbsp;</h6>
+                            <span>@ObservedMember?.City</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col info">
+                            <h6>Looking for:&nbsp;</h6>
+                            <span class="col">@ObservedMember?.LookingFor</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="side-info-container" class="col-md">
+                <div id="photos-container">
+                    <BSCarousel HasControls="true" HasIndicators="true">
+                        @{
+                            var otherPhotos = ObservedMember?.Photos.Where(p => !p.IsMain);
+                        }
+
+                        @if(ObservedMember is null || otherPhotos is null || otherPhotos.Count() == 0)
+                        {
+                            <BSCarouselItem>
+                                <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="250" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false">
+                                    <rect width="100%" height="100%" fill="#777"></rect>
+                                </svg>
+                            </BSCarouselItem>
+                            <BSCarouselItem>
+                                <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="250" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false">
+                                    <rect width="100%" height="100%" fill="#666"></rect>
+                                </svg>
+                            </BSCarouselItem>
+                            <BSCarouselItem>
+                                <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="250" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false">
+                                    <rect width="100%" height="100%" fill="#555"></rect>
+                                </svg>
+                            </BSCarouselItem>
+                        }
+                        else {
+                            @foreach (var photo in otherPhotos)
+                            {
+                                <BSCarouselItem>
+                                </BSCarouselItem>
+                            }
+                        }
+                    </BSCarousel>
+                </div>
+
+                <div id="interests-container">
+                    <p id="interests">
+                        @ObservedMember?.Interests
+                    </p>
+                </div>
+
+                <div id="actions-container">
+                    <i id="md-user-like" class="far fa-heart fa-2x action-success-icon" title="Like" @onmouseenter='() => OnActionHover("md-user-like")' @onmouseleave='() => OnActionHover("md-user-like")' @onclick="() => OnLikeClickHandler()"></i>
+                    <i id="md-user-dislike" class="fas fa-heart-broken fa-2x action-danger-icon" title="Dislike" @onmouseenter='() => OnActionHover("md-user-dislike")' @onmouseleave='() => OnActionHover("md-user-dislike")' @onclick="() => OnDislikeClickHandler()"></i>
+                    <i id="md-user-chat" class="far fa-paper-plane fa-2x action-info-icon" title="Start Chatting" @onmouseenter='() => OnActionHover("md-user-chat")' @onmouseleave='() => OnActionHover("md-user-chat")' @onclick="() => OnChatClick()"></i>
+                </div>
+            </div>
+        </div>
+    </Content>
+</BSModal>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public Member ObservedMember { get; set; }
+
+    [Parameter]
+    public Func<string, Task> OnActionHover { get; set; }
+
+    [Parameter]
+    public Func<Member, Task> OnLikeClick { get; set; }
+
+    [Parameter]
+    public Func<Member, Task> OnDislikeClick { get; set; }
+
+    [Parameter]
+    public Action OnChatClick { get; set; }
+
+    public async Task OnLikeClickHandler()
+    {
+        _blazorStrap.ForwardClick(Id);
+
+        await OnLikeClick(ObservedMember);
+    }
+
+    public async Task OnDislikeClickHandler()
+    {
+        _blazorStrap.ForwardClick(Id);
+
+        await OnDislikeClick(ObservedMember);
+    }
+}
