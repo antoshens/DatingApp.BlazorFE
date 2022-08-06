@@ -1,4 +1,6 @@
-﻿@inject IBlazorStrap _blazorStrap
+﻿@using System.Text;
+
+@inject IBlazorStrap _blazorStrap
 
 <BSModal DataId=@Id IsCentered="true" Class="member-details-modal">
     <Content>
@@ -10,9 +12,12 @@
                     <div class="photo">
                         @{
                             var mainPhoto = ObservedMember?.Photos.FirstOrDefault(p => p.IsMain);
+
+                            var mainPhotoUrl = new StringBuilder(mainPhoto?.Url);
+                            mainPhotoUrl = mainPhotoUrl.Replace("upload/", "upload/h_200,w_200,r_max,c_fill/");
                         }
 
-                        @if (mainPhoto is null)
+                        @if (mainPhoto is null || mainPhotoUrl.Length == 0)
                         {
                             <svg class="bd-placeholder-img photo" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
                                 <rect width="100%" height="100%" fill="#777"></rect>
@@ -20,7 +25,7 @@
                         }
                         else
                         {
-                            
+                            <img class="photo" src="@mainPhotoUrl" focusable="false" />
                         }
                     </div>
                 </div>
@@ -67,37 +72,36 @@
 
             <div id="side-info-container" class="col-md">
                 <div id="photos-container">
-                    <BSCarousel HasControls="true" HasIndicators="true">
-                        @{
-                            var otherPhotos = ObservedMember?.Photos.Where(p => !p.IsMain);
-                        }
+                    @{
+                        var allPhotos = ObservedMember?.Photos;
+                    }
 
-                        @if(ObservedMember is null || otherPhotos is null || otherPhotos.Count() == 0)
+                    @if (ObservedMember is null || allPhotos is null || allPhotos.Count() == 0)
+                    {
+                        <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100 single-photo" width="400" height="250" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false">
+                            <rect width="100%" height="100%" fill="#555"></rect>
+                        </svg>
+                    }
+                    else if (allPhotos.Count() == 1)
+                    {
+                        var photo = allPhotos.First();
+                        var url = ConvertPhotoUrlForSlider(photo.Url);
+
+                        <img class="d-block w-100 single-photo" width="400" height="250" src="@url" focusable="false" />
+                    }
+                    else
+                    {
+                        foreach (var photo in allPhotos)
                         {
-                            <BSCarouselItem>
-                                <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="250" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                    <rect width="100%" height="100%" fill="#777"></rect>
-                                </svg>
-                            </BSCarouselItem>
-                            <BSCarouselItem>
-                                <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="250" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                    <rect width="100%" height="100%" fill="#666"></rect>
-                                </svg>
-                            </BSCarouselItem>
-                            <BSCarouselItem>
-                                <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="250" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                    <rect width="100%" height="100%" fill="#555"></rect>
-                                </svg>
-                            </BSCarouselItem>
-                        }
-                        else {
-                            @foreach (var photo in otherPhotos)
-                            {
-                                <BSCarouselItem>
+                            var url = ConvertPhotoUrlForSlider(photo.Url);
+
+                            <BSCarousel IsFade="true" IsDark="true">
+                                <BSCarouselItem Interval="20000">
+                                    <img class="d-block w-100" width="400" height="250" src="@url" focusable="false" />
                                 </BSCarouselItem>
-                            }
+                            </BSCarousel>
                         }
-                    </BSCarousel>
+                    }
                 </div>
 
                 <div id="interests-container">
@@ -147,5 +151,13 @@
         _blazorStrap.ForwardClick(Id);
 
         await OnDislikeClick(ObservedMember);
+    }
+
+    public string ConvertPhotoUrlForSlider(string url)
+    {
+        var UrlSb = new StringBuilder(url);
+        UrlSb = UrlSb.Replace("upload/", "upload/h_250,w_400,c_fill/");
+
+        return UrlSb.ToString();
     }
 }

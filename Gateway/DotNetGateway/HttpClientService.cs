@@ -39,7 +39,7 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
             {
                 var fullUrl = $"/api/{url}";
 
-                _logger.LogInformation($"Sending POST request to {_options.BaseUrl}{fullUrl}.");
+                _logger.LogInformation($"Sending GET request to {_options.BaseUrl}{fullUrl}.");
 
                 if (await _currentUser.IsLoggedInAsync())
                 {
@@ -53,7 +53,7 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
                 if (response.IsSuccessStatusCode)
                 {
                     var responseModel = JsonConvert.DeserializeObject<TResponse>(jsonResponse);
-                    _logger.LogInformation($"Reply POST {_options.BaseUrl}{fullUrl} - {jsonResponse}.");
+                    _logger.LogInformation($"Reply GET {_options.BaseUrl}{fullUrl} - {jsonResponse}.");
 
                     return responseModel;
                 }
