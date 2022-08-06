@@ -47,7 +47,7 @@
                         <BSButton DataId="Dislike" style="padding: 0; border: 0;"><i id="user-dislike" class="fas fa-heart-broken fa-2x action-danger-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-dislike")' @onmouseleave='() => OnActionHover("user-dislike")' @onclick="() => OnDislikeClick(member)"></i></BSButton>
                         <BSTooltip Placement="Placement.Bottom" Target="Dislike">Dislike</BSTooltip>
 
-                        <BSButton DataId="Details" Target="MemberDetailsModal" style="padding: 0; border: 0;"><i id="user-info" class="far fa-folder-open fa-2x action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-info")' @onmouseleave='() => OnActionHover("user-info")' @onclick="() => OnMoreInfoClick(member)"></i></BSButton>
+                        <BSButton DataId="Details" Target="MemberDetailsModal" style="padding: 0; border: 0;"><i id="user-info" class="fa-solid fa-2x fa-arrow-up-right-from-square action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-info")' @onmouseleave='() => OnActionHover("user-info")' @onclick="() => OnMoreInfoClick(member)"></i></BSButton>
                         <BSTooltip Placement="Placement.Bottom" Target="Details">More Details</BSTooltip>
                         
                         <BSButton DataId="Chat" style="padding: 0; border: 0;"><i id="user-chat" class="far fa-paper-plane fa-2x action-info-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover("user-chat")' @onmouseleave='() => OnActionHover("user-chat")' @onclick="() => OnChatClick()"></i></BSButton>

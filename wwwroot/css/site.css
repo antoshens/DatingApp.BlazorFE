@@ -10,8 +10,8 @@ h1:focus {
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background: linear-gradient(top left bottom right, #ff0a45, #ffaf98);
+    border-color: transparent;
 }
 
 .content {
@@ -71,7 +71,7 @@ a, .btn-link {
 }
 
 a:hover, .btn-link:hover {
-    color: #fdc886 !important;
+    color: #ff5a82 !important;
     cursor: pointer;
 }
 
@@ -86,6 +86,10 @@ div .spinner {
     height: 70px;
     width: 70px;
     border-width: 7px;
+}
+
+div .text-warning {
+    color: #ff5a82 !important;
 }
 
 .not-found-container {
@@ -121,7 +125,7 @@ div .not-found-button-container {
 }
 
 .action-icon:hover {
-    color: #fdc886;
+    color: #ff5a82;
     cursor: pointer;
 }
 
@@ -141,23 +145,21 @@ div .not-found-button-container {
 }
 
 button.btn-success {
-    background-color: #fdc886 !important;
-    border-color: #fdc886 !important;
+    background: linear-gradient(to right bottom, #ff5a82, #ffaf98) !important;
+    border-color: #ff567e00 !important;
 }
 
 button.btn-success:hover {
-    background-color: #e79b3c !important;
-    border-color: #e79b3c !important;
+    background: linear-gradient(to right bottom, #ff3a6a, #f49174) !important;
 }
 
 button.btn-success:active {
-    background-color: #e79b3c !important;
-    border-color: #e18f29 !important;
-    box-shadow: 0 0 0 0.25rem #ce9c0761 !important;
+    box-shadow: 0 0 0 0.25rem #ff000061 !important;
+    background: linear-gradient(to right bottom, #ff003e, #ee6e499e) !important;
 }
 
 button.btn-success:focus {
-    box-shadow: 0 0 0 0.25rem #ce9c0761 !important;
+    box-shadow: 0 0 0 0.25rem #ff000066 !important;
 }
 
 button.login-btn {
