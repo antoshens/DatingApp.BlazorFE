@@ -50,6 +50,12 @@
     color: white;
 }
 
+.nav-divider {
+    width: 1px;
+    height: 30px;
+    margin-top: 8px;
+}
+
 @media (min-width: 641px) {
     .navbar-toggler {
         display: none;

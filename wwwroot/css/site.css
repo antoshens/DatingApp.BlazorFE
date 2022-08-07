@@ -67,7 +67,8 @@ a, .btn-link {
 }
 
 .nav-link.active {
-    color: #A889D9 !important;
+    color: #ff0089 !important;
+    font-weight: 800 !important;
 }
 
 a:hover, .btn-link:hover {

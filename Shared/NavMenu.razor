@@ -7,10 +7,11 @@
 
 <div>
     <BSNav Justify="Justify.End">
-        <BSNavItem IsActive="isActive" OnClick="GoToMainPage">Find you destiny</BSNavItem>
+        <BSNavItem Url="Dashboard">Find you destiny</BSNavItem>
         <BSNavItem>Chats</BSNavItem>
         <BSNavItem>Likes</BSNavItem>
         <BSNavItem title="Account">Welcome, @userName&nbsp;<i class="fa-regular fa-circle-user"></i></BSNavItem>
+        <hr class="nav-divider"/>
         <BSNavItem title="Logout" Target="logoutConfirmation"><i class="fa-solid fa-arrow-right-from-bracket"></i></BSNavItem>
     </BSNav>
 </div>
@@ -18,8 +19,6 @@
 <ConfirmationDialog Id="logoutConfirmation" Message="Do you want to log out from the system?" OnConfirmClick=OnLogoutConfirmed></ConfirmationDialog>
 
 @code {
-    private bool isActive = false;
-
     public string userName;
 
     protected override async Task OnInitializedAsync()
@@ -35,6 +34,4 @@
         _authStateHandler.UpdateState();
         _navigationManager.NavigateTo("Login");
     }
-
-    public void GoToMainPage() => _navigationManager.NavigateTo("Dashboard");
 }
