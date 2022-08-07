@@ -17,15 +17,19 @@
         </div>
     }
 
-    @foreach (var member in Members)
+    @{
+        var topMembers = Members.Take(3);
+    }
+
+    @foreach (var member in topMembers)
     {
         var mainPhoto = member.Photos.SingleOrDefault(p => p.IsMain);
 
-        var mainPhotoUrl = new StringBuilder(mainPhoto?.Url ?? "blank_");
+        var mainPhotoUrl = new StringBuilder(mainPhoto?.Url);
         mainPhotoUrl = mainPhotoUrl.Replace("upload/", "upload/h_500,w_420,c_fill/");
 
         <div>
-            <div class="col-lg-1 card-div member-card @(GetCurrentIndex(member) == 1 ? "innactive-card-first" : "") @(GetCurrentIndex(member) == 2 ? "innactive-card-second" : "")" style="background-image: url(@mainPhotoUrl)">
+            <div class="col-lg-1 card-div member-card @(GetCurrentIndex(member) == 1 ? "innactive-card-first" : "") @(GetCurrentIndex(member) == 2 ? "innactive-card-second" : "")" style='@(string.IsNullOrEmpty(mainPhotoUrl.ToString()) ? "background-color: #bcbdbd;" : $"background-image: url({mainPhotoUrl})")'>
                 <div class="row member-photo">
                     <div class="row member-det-act-container">
                         <div class="row member-details">
@@ -42,7 +46,8 @@
                             </div>
                         </div>
 
-                        @if (showUserSpinner)
+                        @*Member card spinner*@
+                        @if (showUserSpinner && GetCurrentIndex(member) == 0)
                         {
                             <i class="fa-solid fa-xl fa-spinner fa-spin-pulse fa-spin-reverse user-spinner"></i>
                         }
