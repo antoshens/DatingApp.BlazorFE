@@ -119,6 +119,18 @@ p.interests-text {
     color: #ff5a82;
 }
 
+.no-photo {
+    display: flex;
+    justify-content: center;
+    align-content: flex-start;
+    color: white;
+    height: 30%;
+}
+
+.no-photo-text {
+    font-size: xx-large;
+}
+
 /*.move-card {
     -webkit-animation-name: moveCardAnimation;
     -webkit-animation-duration: 3s;

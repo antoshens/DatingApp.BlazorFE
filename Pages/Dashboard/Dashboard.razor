@@ -25,12 +25,24 @@
     {
         var mainPhoto = member.Photos.SingleOrDefault(p => p.IsMain);
 
+        var hasPhoto = !string.IsNullOrEmpty(mainPhoto?.Url);
         var mainPhotoUrl = new StringBuilder(mainPhoto?.Url);
-        mainPhotoUrl = mainPhotoUrl.Replace("upload/", "upload/h_500,w_420,c_fill/");
+
+        if (hasPhoto)
+        {
+            mainPhotoUrl = mainPhotoUrl.Replace("upload/", "upload/h_500,w_420,c_fill/");
+        }
 
         <div>
-            <div class="col-lg-1 card-div member-card @(GetCurrentIndex(member) == 1 ? "innactive-card-first" : "") @(GetCurrentIndex(member) == 2 ? "innactive-card-second" : "")" style='@(string.IsNullOrEmpty(mainPhotoUrl.ToString()) ? "background-color: #bcbdbd;" : $"background-image: url({mainPhotoUrl})")'>
+            <div class="col-lg-1 card-div member-card @(GetCurrentIndex(member) == 1 ? "innactive-card-first" : "") @(GetCurrentIndex(member) == 2 ? "innactive-card-second" : "")" style='@(!hasPhoto ? "background-color: #bcbdbd;" : $"background-image: url({mainPhotoUrl})")'>
                 <div class="row member-photo">
+                    @if (!hasPhoto)
+                    {
+                        <div class="no-photo">
+                            <p class="no-photo-text">No photo</p>
+                        </div>
+                    }
+
                     <div class="row member-det-act-container">
                         <div class="row member-details">
                             <div class="row member-name">
@@ -58,7 +70,7 @@
                             
                             <BSButton DataId="Details" Target="MemberDetailsModal" style="padding: 0; border: 0; color: #ffffff;"><i id='@($"user-info-{member.Id}")' class="fa-solid fa-2x fa-arrow-up-right-from-square action-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover($"user-info-{member.Id}")' @onmouseleave='() => OnActionHover($"user-info-{member.Id}")' @onclick="() => OnMoreInfoClick(member)" title="User Info"></i></BSButton>
 
-                            <i id='@($"user-chat-{member.Id}")' class="far fa-paper-plane fa-2x action-info-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover($"user-chat-{member.Id}")' @onmouseleave='() => OnActionHover($"user-chat-{member.Id}")' @onclick="() => OnChatClick()" title="Start Chatting"></i>
+                            <i id='@($"user-chat-{member.Id}")' class="far fa-message fa-2x action-info-icon @(GetCurrentIndex(member) > 0 ? "hidden-member-actions" : "")" @onmouseenter='() => OnActionHover($"user-chat-{member.Id}")' @onmouseleave='() => OnActionHover($"user-chat-{member.Id}")' @onclick="() => OnChatClick()" title="Start Chatting"></i>
                         </div>
                     </div>
                 </div>
