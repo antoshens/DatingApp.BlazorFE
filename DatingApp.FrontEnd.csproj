@@ -28,10 +28,12 @@
 
   <ItemGroup>
     <ComponentScssFiles Remove="Pages\Dashboard\MemberDetails.razor.scss" />
+    <ComponentScssFiles Remove="Pages\UserAccount\Account.razor.scss" />
   </ItemGroup>
 
   <ItemGroup>
     <Watch Remove="Pages\Dashboard\MemberDetails.razor.scss" />
+    <Watch Remove="Pages\UserAccount\Account.razor.scss" />
   </ItemGroup>
 
   <!-- Compile SCSS files into CSS -->

@@ -68,7 +68,13 @@ a, .btn-link {
 
 .nav-link.active {
     color: #ff0089 !important;
-    font-weight: 800 !important;
+    border-bottom: outset #ff0089 5px;
+}
+
+.nav-link:focus:not(.not-menu-item), .nav-link:hover:not(.not-menu-item) {
+    border-bottom: outset #ff5a8261 5px !important;
+    color: #ff5a82 !important;
+    transition: none !important;
 }
 
 a:hover, .btn-link:hover {
