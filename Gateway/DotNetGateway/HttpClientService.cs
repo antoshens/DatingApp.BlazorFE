@@ -257,6 +257,59 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
             }
         }
 
+        public async Task<TResponse?> SendPutAsync<TResponse, TRequest>(string url, TRequest? model, bool isAnonymous = false)
+        {
+            try
+            {
+                var fullUrl = $"/api/{url}";
+
+                if (await _currentUser.IsLoggedInAsync())
+                {
+                    SetAuthHeader(await _currentUser.GetTokenAsync());
+                }
+
+                _logger.LogInformation($"Sending PUT request to {_options.BaseUrl}{fullUrl}.");
+
+                var response = await _httpClient.PutAsync(fullUrl, null);
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseModel = JsonConvert.DeserializeObject<TResponse>(jsonResponse);
+                    _logger.LogInformation($"Reply PUT {_options.BaseUrl}{fullUrl} - {jsonResponse}.");
+
+                    return responseModel;
+                }
+                else
+                {
+                    _logger.LogWarning($"Bad reply for {fullUrl}. Details: {jsonResponse}");
+                }
+
+                return default(TResponse);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError($"Gateway server returns exception with HTTP code: {ex.StatusCode} and message {ex.Message}.");
+
+#if DEBUG
+                _logger.LogDebug($"Exception details: {ex.Message}{Environment.NewLine}{ex.Data}");
+#endif
+
+                return default(TResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Unknown exception has been occured: {ex.Message}.");
+
+#if DEBUG
+                _logger.LogDebug($"Exception details: {ex.Message}{Environment.NewLine}{ex.Data}");
+#endif
+
+                return default(TResponse);
+            }
+        }
+
         private void SetAuthHeader(string? value)
         {
             if (!string.IsNullOrEmpty(value))

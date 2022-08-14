@@ -20,6 +20,6 @@
             await _httpClientService.SendPostAsync<GatewayModels.UserGateway, GatewayModels.UserGateway>("auth/register", user, true);
 
         public async Task<UserAccount?> UpdateUserDetails(UserAccount account) =>
-            await _httpClientService.SendPostAsync<UserAccount, UserAccount>("user", account);
+            await _httpClientService.SendPutAsync<UserAccount, UserAccount>("user", account);
     }
 }
