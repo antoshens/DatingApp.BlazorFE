@@ -9,7 +9,12 @@ main {
 }
 
 .sidebar {
-    /*background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);*/
+    background-color: #eceeef;
+    z-index: 1;
+    box-shadow: 0px 5px 8px 2px #e1e0df;
+    height: 50px;
+    position: sticky;
+    top: 0;
 }
 
 .top-row {
@@ -50,15 +55,6 @@ main {
         flex-direction: row;
         overflow-y: auto;
         overflow-x: hidden;
-    }
-
-    .sidebar {
-        background-color: white;
-        z-index: 1;
-        box-shadow: 0px 5px 8px 2px #dbd7ce;
-        height: 50px;
-        position: sticky;
-        top: 0;
     }
 
     .top-row {

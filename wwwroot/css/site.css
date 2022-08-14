@@ -2,6 +2,11 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+}
+
+body {
+    background: #eceeef !important;
 }
 
 h1:focus {
@@ -71,7 +76,7 @@ a, .btn-link {
     border-bottom: outset #ff0089 5px;
 }
 
-.nav-link:focus:not(.not-menu-item), .nav-link:hover:not(.not-menu-item) {
+.nav-link:hover:not(.not-menu-item) {
     border-bottom: outset #ff5a8261 5px !important;
     color: #ff5a82 !important;
     transition: none !important;
