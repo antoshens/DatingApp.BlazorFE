@@ -28,9 +28,59 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
             _httpClient = _httpClientFactory.CreateClient("datingapp");
         }
 
-        public Task<TResponse?> SendDeleteAsync<TResponse, TRequest>(string url, TRequest? model, bool isAnonymous = false)
+        public async Task<TResponse?> SendDeleteAsync<TResponse>(string url, bool isAnonymous = false)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var fullUrl = $"/api/{url}";
+
+                if (await _currentUser.IsLoggedInAsync())
+                {
+                    SetAuthHeader(await _currentUser.GetTokenAsync());
+                }
+
+                var response = await _httpClient.DeleteAsync(fullUrl);
+
+                _logger.LogInformation($"Sending DELETE request to {_options.BaseUrl}{fullUrl}.");
+
+                response = await _httpClient.PostAsync(fullUrl, null);
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseModel = JsonConvert.DeserializeObject<TResponse>(jsonResponse);
+                    _logger.LogInformation($"Reply DELETE {_options.BaseUrl}{fullUrl} - {jsonResponse}.");
+
+                    return responseModel;
+                }
+                else
+                {
+                    _logger.LogWarning($"Bad reply for {fullUrl}. Details: {jsonResponse}");
+                }
+
+                return default(TResponse);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError($"Gateway server returns exception with HTTP code: {ex.StatusCode} and message {ex.Message}.");
+
+#if DEBUG
+                _logger.LogDebug($"Exception details: {ex.Message}{Environment.NewLine}{ex.Data}");
+#endif
+
+                return default(TResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Unknown exception has been occured: {ex.Message}.");
+
+#if DEBUG
+                _logger.LogDebug($"Exception details: {ex.Message}{Environment.NewLine}{ex.Data}");
+#endif
+
+                return default(TResponse);
+            }
         }
 
         public async Task<TResponse?> SendGetAsync<TResponse>(string url, bool isAnonymous = false)

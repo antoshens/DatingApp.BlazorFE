@@ -48,5 +48,10 @@
         {
             return await _memberGateway.DislikeMemberAsync(userId);
         }
+
+        public async Task<UserAccount> GetUserAccount()
+        {
+            return await _userGateway.GetUserDetails();
+        }
     }
 }
