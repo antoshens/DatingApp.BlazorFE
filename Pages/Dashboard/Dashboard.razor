@@ -98,13 +98,13 @@
 <MemberDetails Id="MemberDetailsModal" ObservedMember="SelectedMember" OnActionHover="OnActionHover" OnLikeClick="OnLikeClick" OnDislikeClick="OnDislikeClick" OnChatClick="OnChatClick"></MemberDetails>
 
 @code {
-    private int skip = 0;
-    private int take = 10;
+    int skip = 0;
+    int take = 10;
 
-    public List<Member> Members { get; private set; } = new List<Member>();
-    public bool showMainSpinner { get; set; }
-    public bool showUserSpinner { get; set; }
-    public Member SelectedMember { get; private set; }
+    List<Member> Members { get; private set; } = new List<Member>();
+    bool showMainSpinner { get; set; }
+    bool showUserSpinner { get; set; }
+    Member SelectedMember { get; private set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,7 +116,7 @@
         showMainSpinner = false;
     }
 
-    public async Task OnLikeClick(Member member)
+    async Task OnLikeClick(Member member)
     {
         showUserSpinner = true;
 
@@ -135,7 +135,7 @@
         }
     }
 
-    public async Task OnDislikeClick(Member member)
+    async Task OnDislikeClick(Member member)
     {
         showUserSpinner = true;
 
@@ -153,27 +153,27 @@
         }
     }
 
-    public void OnChatClick()
+    void OnChatClick()
     {
         // TODO: Redirect to the chat page
     }
 
-    public void OnMoreInfoClick(Member member)
+    void OnMoreInfoClick(Member member)
     {
         SelectedMember = member;
     }
 
-    public int GetCurrentIndex(Member member)
+    int GetCurrentIndex(Member member)
     {
         return Members.IndexOf(member);
     }
 
-    public async Task OnActionHover(string elementId)
+    async Task OnActionHover(string elementId)
     {
         await _jsRuntime.InvokeVoidAsync("Animation.SetAnimation", elementId);
     }
 
-    private async Task GetNextSuggestedMembers()
+    async Task GetNextSuggestedMembers()
     {
         skip = take;
         take += take;

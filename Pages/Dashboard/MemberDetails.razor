@@ -139,21 +139,21 @@
     [Parameter]
     public Action OnChatClick { get; set; }
 
-    public async Task OnLikeClickHandler()
+    async Task OnLikeClickHandler()
     {
         _blazorStrap.ForwardClick(Id);
 
         await OnLikeClick(ObservedMember);
     }
 
-    public async Task OnDislikeClickHandler()
+    async Task OnDislikeClickHandler()
     {
         _blazorStrap.ForwardClick(Id);
 
         await OnDislikeClick(ObservedMember);
     }
 
-    public string ConvertPhotoUrlForSlider(string url)
+    string ConvertPhotoUrlForSlider(string url)
     {
         var UrlSb = new StringBuilder(url);
         UrlSb = UrlSb.Replace("upload/", "upload/h_250,w_400,c_fill/");
