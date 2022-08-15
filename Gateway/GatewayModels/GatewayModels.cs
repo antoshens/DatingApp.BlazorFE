@@ -16,4 +16,18 @@
         DateTime BirthDate,
         byte Sex
     );
+
+    public record class UserAccountGateway(string UserName,
+        string Password,
+        string Interests,
+        LookingFor LookingFor,
+        string City,
+        string Country,
+        IEnumerable<UserPhoto> Photos,
+        string? FirstName,
+        string? LastName,
+        string Email,
+        DateTime BirthDate,
+        byte Sex
+    );
 }

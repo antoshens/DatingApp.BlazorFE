@@ -49,9 +49,40 @@
             return await _memberGateway.DislikeMemberAsync(userId);
         }
 
-        public async Task<UserAccount> GetUserAccount()
+        public async Task<UserAccount?> GetUserAccount()
         {
-            return await _userGateway.GetUserDetails();
+            var response = await _userGateway.GetUserDetails();
+
+            if (response is null)
+            {
+                return null;
+            }
+
+            var translator = new UserTranslators();
+            var userAccount = translator.GetModel(response);
+
+            return userAccount;
+        }
+
+        public async Task<UserAccount?> UpdateUserAccount(UserAccount account)
+        {
+            var translator = new UserTranslators();
+            var userAccountGateway = translator.GetGatewayModel(account);
+
+            var response = await _userGateway.UpdateUserDetails(userAccountGateway);
+
+            if (response is null)
+            {
+                return null;
+            }
+            var userAccount = translator.GetModel(response);
+
+            return userAccount;
+        }
+
+        public async Task<int> DeleteUserAccount()
+        {
+            return await _userGateway.DeleteUserDetails();
         }
     }
 }

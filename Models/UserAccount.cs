@@ -4,6 +4,9 @@ namespace DatingApp.FrontEnd.Models
 {
     public class UserAccount
     {
+        [Required]
+        public string? UserName { get; set; }
+
         [Required(ErrorMessage ="Please fill in your First Name")]
         public string? FirstName { get; set; }
 
@@ -36,6 +39,6 @@ namespace DatingApp.FrontEnd.Models
         public DateTime BirthDate { get; set; }
 
         [EnumDataType(typeof(Gender))]
-        public byte Sex { get; set; }
+        public Gender Gender { get; set; }
     }
 }

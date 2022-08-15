@@ -3,7 +3,7 @@
     public class UserTranslators : IModelTranslator<UserLoginGateway, UserLogin>,
         IModelTranslator<UserGateway, RegisterUser>
     {
-        public UserLoginGateway GetGatewayModel(UserLogin model) => new (model.Login, model.Password);
+        public UserLoginGateway GetGatewayModel(UserLogin model) => new(model.Login, model.Password);
 
         public UserGateway GetGatewayModel(RegisterUser model) => new(model.Email, model.Password,
             model.Interests, (byte)model.LookingFor, model.City, model.Country, model.FirstName,
@@ -29,5 +29,25 @@
             City = model.City,
             Country = model.Country,
         };
+
+        public UserAccount GetModel(UserAccountGateway model) => new UserAccount
+        {
+            UserName = model.UserName,
+            Password = model.Password,
+            Interests = model.Interests,
+            LookingFor = (LookingFor)model.LookingFor,
+            City = model.City,
+            Country = model.Country,
+            Photos = model.Photos,
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            Email = model.Email,
+            BirthDate = model.BirthDate,
+            Gender = (Gender)model.Sex
+        };
+
+        public UserAccountGateway GetGatewayModel(UserAccount model) => new(model.UserName, model.Password, model.Interests,
+            model.LookingFor, model.City, model.Country, model.Photos, model.FirstName, model.LookingFor.ToString(),
+            model.Email, model.BirthDate, (byte)model.Gender);
     }
 }
