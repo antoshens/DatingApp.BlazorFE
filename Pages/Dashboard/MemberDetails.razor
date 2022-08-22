@@ -1,6 +1,8 @@
 ﻿@using System.Text;
+@using DatingApp.FrontEnd.Gateway.Utils
 
-@inject IBlazorStrap _blazorStrap
+@inject IBlazorStrap _blazorStrap;
+@inject IImageFileProvider _imageFileProvider;
 
 <BSModal DataId=@Id IsCentered="true" Class="member-details-modal">
     <Content>
@@ -13,8 +15,7 @@
                         @{
                             var mainPhoto = ObservedMember?.Photos.FirstOrDefault(p => p.IsMain);
 
-                            var mainPhotoUrl = new StringBuilder(mainPhoto?.Url);
-                            mainPhotoUrl = mainPhotoUrl.Replace("upload/", "upload/h_200,w_200,r_max,c_fill/");
+                            var mainPhotoUrl = new StringBuilder(_imageFileProvider.BuildTransformedImage(mainPhoto?.Url, 200, 200, true, ImageFormat.WebP));
                         }
 
                         @if (mainPhoto is null || mainPhotoUrl.Length == 0)
@@ -155,8 +156,7 @@
 
     string ConvertPhotoUrlForSlider(string url)
     {
-        var UrlSb = new StringBuilder(url);
-        UrlSb = UrlSb.Replace("upload/", "upload/h_250,w_400,c_fill/");
+        var UrlSb = new StringBuilder(_imageFileProvider.BuildTransformedImage(url, 250, 400, format: ImageFormat.WebP));
 
         return UrlSb.ToString();
     }

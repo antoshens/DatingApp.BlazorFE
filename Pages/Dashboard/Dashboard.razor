@@ -2,11 +2,13 @@
 
 @using DatingApp.FrontEnd.Gateway.DotNetGateway;
 @using System.Text;
+@using DatingApp.FrontEnd.Gateway.Utils
 
 @attribute [Authorize]
 
 @inject GatewayAdapter gtwAdapter;
 @inject IJSRuntime _jsRuntime;
+@inject IImageFileProvider _imageFileProvider;
 
 <div class="member-cards-gallery">
     @*Spinner*@
@@ -26,11 +28,11 @@
         var mainPhoto = member.Photos.SingleOrDefault(p => p.IsMain);
 
         var hasPhoto = !string.IsNullOrEmpty(mainPhoto?.Url);
-        var mainPhotoUrl = new StringBuilder(mainPhoto?.Url);
+        var mainPhotoUrl = new StringBuilder();
 
         if (hasPhoto)
         {
-            mainPhotoUrl = mainPhotoUrl.Replace("upload/", "upload/h_500,w_420,c_fill/");
+            mainPhotoUrl = new StringBuilder(_imageFileProvider.BuildTransformedImage(mainPhoto?.Url, 500, 420, format: ImageFormat.WebP));
         }
 
         <div>
@@ -101,10 +103,10 @@
     int skip = 0;
     int take = 10;
 
-    List<Member> Members { get; private set; } = new List<Member>();
+    List<Member> Members { get; set; } = new List<Member>();
     bool showMainSpinner { get; set; }
     bool showUserSpinner { get; set; }
-    Member SelectedMember { get; private set; }
+    Member SelectedMember { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

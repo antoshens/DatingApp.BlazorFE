@@ -6,6 +6,7 @@ using DatingApp.FrontEnd.Infrastructure;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using UserGateway = DatingApp.FrontEnd.Gateway.DotNetGateway.UserGateway;
+using DatingApp.FrontEnd.Gateway.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -63,6 +64,7 @@ void ConfigureServices(ConfigurationManager config, IServiceCollection services)
     services.AddScoped<IUserGateway, UserGateway>();
     services.AddScoped<IMemberGateway, MemberGateway>();
     services.AddScoped<GatewayAdapter>();
+    services.AddScoped<IImageFileProvider, ImageFileProvider>();
 
     services.AddScoped<IAuthenticationStateHandler, AuthenticationStateHandler>();
     services.AddScoped<ICurrentUser, CurrentUser>();
