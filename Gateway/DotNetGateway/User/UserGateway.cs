@@ -19,7 +19,7 @@
         public async Task<GatewayModels.UserGateway?> RegisterAsync(GatewayModels.UserGateway user) =>
             await _httpClientService.SendPostAsync<GatewayModels.UserGateway, GatewayModels.UserGateway>("auth/register", user, true);
 
-        public async Task<UserAccountGateway?> UpdateUserDetails(UserAccountGateway account) =>
-            await _httpClientService.SendPutAsync<UserAccountGateway, UserAccountGateway>("user", account);
+        public async Task<UserAccountGateway?> UpdateUserDetails<T>(PatchModel<T> accountPatch) where T : class =>
+            await _httpClientService.SendPatchAsync<UserAccountGateway, T>("user", accountPatch);
     }
 }

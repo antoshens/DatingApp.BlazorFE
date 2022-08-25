@@ -136,6 +136,74 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
             }
         }
 
+        public async Task<TResponse?> SendPatchAsync<TResponse, TRequest>(string url, PatchModel<TRequest> patchModel, bool isAnonymous = false) where TRequest : class
+        {
+            try
+            {
+                var fullUrl = $"/api/{url}";
+
+                if (await _currentUser.IsLoggedInAsync())
+                {
+                    SetAuthHeader(await _currentUser.GetTokenAsync());
+                }
+
+                string content;
+                HttpResponseMessage response;
+
+                if (patchModel != null)
+                {
+                    content = JsonConvert.SerializeObject(patchModel.ReplaceProperties);
+                    var stringContent = new StringContent(content, Encoding.UTF8, "application/json");
+
+                    _logger.LogInformation($"Sending PATCH request to {_options.BaseUrl}{fullUrl} with body {content}.");
+
+                    response = await _httpClient.PatchAsync(fullUrl, stringContent);
+                }
+                else
+                {
+                    _logger.LogError($"PATCH request should contain a request body.");
+
+                    return default(TResponse);
+                }
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseModel = JsonConvert.DeserializeObject<TResponse>(jsonResponse);
+                    _logger.LogInformation($"Reply PATCH {_options.BaseUrl}{fullUrl} - {jsonResponse}.");
+
+                    return responseModel;
+                }
+                else
+                {
+                    _logger.LogWarning($"Bad reply for {fullUrl}. Details: {jsonResponse}");
+                }
+
+                return default(TResponse);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError($"Gateway server returns exception with HTTP code: {ex.StatusCode} and message {ex.Message}.");
+
+#if DEBUG
+                _logger.LogDebug($"Exception details: {ex.Message}{Environment.NewLine}{ex.Data}");
+#endif
+
+                return default(TResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Unknown exception has been occured: {ex.Message}.");
+
+#if DEBUG
+                _logger.LogDebug($"Exception details: {ex.Message}{Environment.NewLine}{ex.Data}");
+#endif
+
+                return default(TResponse);
+            }
+        }
+
         public async Task<TResponse?> SendPostAsync<TResponse, TRequest>(string url, TRequest? model, bool isAnonymous = false) 
         {
             try

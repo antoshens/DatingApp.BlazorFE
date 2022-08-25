@@ -30,4 +30,14 @@
         DateTime BirthDate,
         byte Sex
     );
+
+    public record class UserAccountGeneralInfoGateway(string UserName,
+        LookingFor LookingFor,
+        string City,
+        string Country,
+        string? FirstName,
+        string? LastName,
+        string Email,
+        DateTime BirthDate,
+        byte Sex);
 }

@@ -42,12 +42,16 @@
             FirstName = model.FirstName,
             LastName = model.LastName,
             Email = model.Email,
-            BirthDate = model.BirthDate,
+            BirthDate = DateOnly.FromDateTime(model.BirthDate),
             Gender = (Gender)model.Sex
         };
 
         public UserAccountGateway GetGatewayModel(UserAccount model) => new(model.UserName, model.Password, model.Interests,
             model.LookingFor, model.City, model.Country, model.Photos, model.FirstName, model.LookingFor.ToString(),
-            model.Email, model.BirthDate, (byte)model.Gender);
+            model.Email, model.BirthDate.ToDateTime(new TimeOnly()), (byte)model.Gender);
+
+        public UserAccountGeneralInfoGateway GetGatewayModel(UserAccountGeneralInfo model) => new(model.UserName,
+            model.LookingFor, model.City, model.Country, model.FirstName, model.LookingFor.ToString(),
+            model.Email, model.BirthDate.ToDateTime(new TimeOnly()), (byte)model.Gender);
     }
 }

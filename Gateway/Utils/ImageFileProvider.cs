@@ -31,14 +31,14 @@ namespace DatingApp.FrontEnd.Gateway.Utils
 
             if (maxHeight > 0 || maxWidth > 0)
             {
-                transformedUrl = transformedUrl.Replace("upload/", $"upload/{maxHeight},{maxWidth},c_fill/");
+                transformedUrl = transformedUrl.Replace("upload/", $"upload/h_{maxHeight},w_{maxWidth},c_fill/");
             }
 
             if (isMaxRadius)
             {
                 transformedUrl = transformedUrl.ToString().Contains("c_fill")
-                    ? transformedUrl.Replace("c_fill/", $"c_fill/r_max")
-                    : transformedUrl.Replace("upload/", $"c_fill/r_max");
+                    ? transformedUrl.Replace("c_fill/", $"c_fill/r_max/")
+                    : transformedUrl.Replace("upload/", $"c_fill/r_max/");
             }
 
             if (format.HasValue)
@@ -46,7 +46,7 @@ namespace DatingApp.FrontEnd.Gateway.Utils
                 var formatRegex = new Regex(@".\w{3,4}$");
                 var match = formatRegex.Match(transformedUrl.ToString());
 
-                transformedUrl = transformedUrl.Replace(match.Value, format.Value.ToString().ToLower());
+                transformedUrl = transformedUrl.Replace(match.Value, $".{format.Value.ToString().ToLower()}");
             }
 
             return transformedUrl.ToString();

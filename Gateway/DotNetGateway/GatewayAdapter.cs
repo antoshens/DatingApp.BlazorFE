@@ -64,12 +64,24 @@
             return userAccount;
         }
 
-        public async Task<UserAccount?> UpdateUserAccount(UserAccount account)
+        public async Task<UserAccount?> UpdateUserAccount<T>(T model) where T : class
         {
             var translator = new UserTranslators();
-            var userAccountGateway = translator.GetGatewayModel(account);
+            UserAccountGateway response;
 
-            var response = await _userGateway.UpdateUserDetails(userAccountGateway);
+            if (typeof(T) == typeof(UserAccountGeneralInfo))
+            {
+                var gatewayModel = translator.GetGatewayModel(model as UserAccountGeneralInfo);
+                var accountPatch = new PatchModel<UserAccountGeneralInfoGateway>(gatewayModel);
+
+                response = await _userGateway.UpdateUserDetails(accountPatch);
+            }
+            else
+            {
+                var accountPatch = new PatchModel<T>(model);
+
+                response = await _userGateway.UpdateUserDetails(accountPatch);
+            }
 
             if (response is null)
             {

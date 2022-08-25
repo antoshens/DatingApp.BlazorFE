@@ -5,7 +5,7 @@
         Task<LoggedUserGateway?> LoginAsync(UserLoginGateway login);
         Task<GatewayModels.UserGateway?> RegisterAsync(GatewayModels.UserGateway user);
         Task<UserAccountGateway?> GetUserDetails();
-        Task<UserAccountGateway?> UpdateUserDetails(UserAccountGateway account);
+        Task<UserAccountGateway?> UpdateUserDetails<T>(PatchModel<T> accountPatch) where T : class;
         Task<int> DeleteUserDetails();
     }
 }
