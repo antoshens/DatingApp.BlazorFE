@@ -15,7 +15,7 @@
                         @{
                             var mainPhoto = ObservedMember?.Photos.FirstOrDefault(p => p.IsMain);
 
-                            var mainPhotoUrl = new StringBuilder(_imageFileProvider.BuildTransformedImage(mainPhoto?.Url, 200, 200, true, ImageFormat.WebP));
+                            var mainPhotoUrl = new StringBuilder(_imageFileProvider.BuildTransformedImage(mainPhoto?.Url, 200, 200, true, format: ImageFormat.WebP));
                         }
 
                         @if (mainPhoto is null || mainPhotoUrl.Length == 0)

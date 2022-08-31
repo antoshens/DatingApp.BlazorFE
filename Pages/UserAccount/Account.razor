@@ -1,29 +1,564 @@
-﻿@page "/Account"
+﻿@page "/Account";
+
+@using DatingApp.FrontEnd.Gateway.DotNetGateway
+@using DatingApp.FrontEnd.Gateway.Utils
+@using System.Net.Http.Headers
+@using DatingApp.FrontEnd.Infrastructure
+@using DatingApp.FrontEnd.Models.CurrentUser
+@using Models;
+@using BlazorStrap;
+
+@attribute [Authorize]
+
+@inject IJSRuntime _jsRuntime;
+@inject GatewayAdapter _gtwAdapter;
+@inject IImageFileProvider _imageFileProvider;
+@inject IBlazorStrap _blazorStrap;
+@inject ICurrentUser _currentUser;
+@inject IAuthenticationStateHandler _authStateHandler;
+@inject NavigationManager _navigationManager;
+
+<BSInputFile id="choose-avatar" IsRequired="false" ValidWhen="@(() => true)" style="display: none;" OnChange="OnAvatarChange" accept=".png,.jpg,.jpeg"/>
+<BSInputFile id="upload-photo" IsRequired="false" ValidWhen="@(() => true)" style="display: none;" OnChange="OnNewPhotoAdd" accept=".png,.jpg,.jpeg"/>
 
 <div class="account-body">
-    <div class="account-container">
-        <div class="user-details-container">
-            <div class="avatar">
+    @*Spinner*@
+    @if (showMainSpinner)
+    {
+        <div class="spinner-div account-spinner">
+            <BSSpinner id="spinner" Class="spinner" Color="BSColor.Warning" Size="Size.ExtraLarge" />
+        </div>
+    }
 
+    <div class="row account-container">
+        <div class="col-lg-4 col-md-8 col-sm-8 user-details-container">
+            <div class="row avatar" stule>
+                <div class="avatar-image" title="Change Profile Image" style="background-image: url(@MainPhotoUrl)" onclick="@OnProfilePhotoEditClick">
+                    <div class="edit-avatar">
+                        <i class="fa-solid fa-camera fa-2xl"></i>
+                    </div>
+                </div>
             </div>
 
-            <div class="main-info-containe">
+            <hr />
 
+            <div class='row @(IsMainInfoInEditMode ? "main-info-container-edit" : "main-info-container")'>
+                @if (!IsMainInfoInEditMode)
+                {
+                    <div class="row user-name info-block">
+                        <div class="col-lg-11">
+                            <h4>@GeneralInfo.FirstName&nbsp;@GeneralInfo.LastName</h4>
+                        </div>
+
+                        <div class="col-lg-1">
+                            <i title="Edit Profile" class="fa-solid fa-pencil action-icon" onclick="@OnGeneralInfoEditClick"></i>
+                        </div>
+                    </div>
+
+                    <div class="row info-block">
+                        <div class="col-sm-1">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+
+                        <div class="col-5 info">
+                            <h6>Country:&nbsp;</h6>
+                            <span>@GeneralInfo.Country</span>
+                        </div>
+
+                        <div class="col-6 info">
+                            <h6>City:&nbsp;</h6>
+                            <span>@GeneralInfo.City</span>
+                        </div>
+                    </div>
+
+                    <div class="row info-block">
+                        <div class="col-sm-1">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+
+                        <div class="col-11 info">
+                            <h6>Email:&nbsp;</h6>
+                            <span>@GeneralInfo.Email</span>
+                        </div>
+                    </div>
+
+                    <div class="row info-block">
+                        <div class="col-sm-1">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+
+                        <div class="col-11 info">
+                            <h6>Birth Date:&nbsp;</h6>
+                            <span>@GeneralInfo.BirthDate</span>
+                        </div>
+                    </div>
+
+                    <div class="row info-block">
+                        <div class="col-sm-1">
+                            <i class="fa-solid fa-transgender"></i>
+                        </div>
+
+                        <div class="col-5 info">
+                            <h6>Gender:&nbsp;</h6>
+                            <span>@GeneralInfo.Gender</span>
+                        </div>
+
+                        <div class="col-6 info" style="justify-content: flex-end;">
+                            <h6>Looking:&nbsp;</h6>
+                            <span>@GeneralInfo.LookingFor</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <EditForm class="row" Model="@GeneralInfo" OnValidSubmit="@HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <BSCol Position="Position.Relative" ColumnMedium="12">
+                            <BSValidationSummary />
+                        </BSCol>
+
+                        <div class="row user-name info-block">
+                            <div class="col-lg-11 stick-right">
+                                <button type="submit" class="submit-btn"><i title="Submit" class="fa-solid fa-check action-success-icon"></i></button>
+                            </div>
+
+                            <div class="col-lg-1">
+                                <i title="Cancel" class="fa-solid fa-xmark action-danger-icon" onclick="@OnGeneralInfoCancelEditClick"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-control-row info-block input-group mb-4">
+                            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                            <BSInput InputType="InputType.Text" placeholder="First Name" @bind-Value="GeneralInfo.FirstName" />
+                        </div>
+
+                        <div class="form-control-row info-block input-group mb-4">
+                            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                            <BSInput InputType="InputType.Text" placeholder="Last Name" @bind-Value="GeneralInfo.LastName" />
+                        </div>
+
+                        <div class="form-control-row info-block input-group mb-4">
+                            <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
+                            <BSInput InputType="InputType.Text" placeholder="Country" @bind-Value="GeneralInfo.Country" />
+                        </div>
+
+                        <div class="form-control-row info-block input-group mb-4">
+                            <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
+                            <BSInput InputType="InputType.Text" placeholder="City" @bind-Value="GeneralInfo.City" />
+                        </div>
+
+                        <div class="form-control-row info-block input-group mb-4">
+                            <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                            <BSInput InputType="InputType.Email" placeholder="Email" @bind-Value="GeneralInfo.Email" />
+                        </div>
+
+                        <div class="form-control-row info-block input-group mb-4">
+                            <span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>
+                            <BSInput InputType="InputType.Date" placeholder="Date of Birth" @bind-Value="GeneralInfo.BirthDate" />
+                        </div>
+
+                        <div class="form-control-row info-block input-group mb-4">
+                            <span class="input-group-text"><i class="fa-solid fa-transgender"></i></span>
+                            <BSInput InputType="InputType.Select" placeholder="Gender" @bind-Value="GeneralInfo.Gender">
+                                @foreach (var gender in Enum.GetValues(typeof(Gender)))
+                                {
+                                    <option value="@gender">
+                                        <DisplayName TItem="Gender" ForEnum="@gender"></DisplayName>
+                                    </option>
+                                }
+                        </BSInput>
+                    </div>
+
+                    <div class="form-control-row info-block input-group mb-4">
+                        <span class="input-group-text"><i class="fa-solid fa-transgender"></i></span>
+                        <BSInput InputType="InputType.Select" placeholder="Looking for" @bind-Value="GeneralInfo.LookingFor">
+                            @foreach (var lookingFor in Enum.GetValues(typeof(LookingFor)))
+                            {
+                                <option value="@lookingFor">
+                                    <DisplayName TItem="LookingFor" ForEnum="@lookingFor"></DisplayName>
+                                </option>
+                            }
+                        </BSInput>
+                    </div>
+                </EditForm>
+                }
+
+                <hr class='@(IsMainInfoInEditMode ? "main-info-divider-edit" : "main-info-divider")' />
+
+                <div class="row">
+                    @if (!IsPasswordInEditMode)
+                    {
+                        <BSButton id="edit-password-btn" OnClick="OnPasswordEditClick" Color="BSColor.Secondary" Size="Size.Small" Class="register-btn">Edit Password</BSButton>
+                    }
+                    else
+                    {
+                        <EditForm class="row" Model="@User">
+                            <DataAnnotationsValidator />
+                            <BSCol Position="Position.Relative" ColumnMedium="12">
+                                <BSValidationSummary />
+                            </BSCol>
+
+                             <div class="form-control-row info-block input-group mb-4">
+                                <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                                <BSInput InputType="InputType.Password" placeholder="Old Password" @bind-Value="UserPassword.OldPassword" />
+                            </div>
+
+                            <div class="form-control-row info-block input-group mb-4">
+                                <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                                <BSInput InputType="InputType.Password" placeholder="New Password" @bind-Value="UserPassword.Password" />
+                            </div>
+
+                            <div class="form-control-row info-block input-group mb-4">
+                                <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                                <BSInput InputType="InputType.Password" placeholder="Repeat Password" @bind-Value="UserPassword.RepeatPassword" />
+                            </div>
+                        </EditForm>
+
+                        <div class="row password-edit-container">
+                            <div class="col-lg-6">
+                                <BSButton id="cancel-password-btn" OnClick="OnPasswordCancelEditClick" Color="BSColor.Secondary" Size="Size.Small" Class="register-btn">Cancel</BSButton>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <BSButton id="submit-password-btn" OnClick="UpdatePassword" Color="BSColor.Success" Size="Size.Small" Class="register-btn">Submit</BSButton>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 
-        <div class="other-details">
-            <div class="all-photos">
+        <div class="row col-lg-8 col-md-8 col-sm-8 other-details">
+            <div class="row all-photos">
+                <div class="row gallery">
+                    <div class="col-2 left-photo-wrapper">
+                        <div class="left-photo" style='@(!string.IsNullOrEmpty(LeftPhotoUrl) ? $"background-image: url({LeftPhotoUrl})" : "background: #ababab82;")'>
+                            <div class="left-arrow" style='@(string.IsNullOrEmpty(RightPhotoUrl) ? "display: none;" : "")'>
+                                <i title="Swipe Left" onclick="@OnSwipeLeftClick" class="fa-solid fa-chevron-left fa-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div id="middle-photo" class="col-7 middle-photo-wrapper" style='@(!string.IsNullOrEmpty(MiddlePhotoUrl) ? $"background-image: url({MiddlePhotoUrl})" : "background: #ababab82;")'>
+                        <div class="middle-photo">
+                            @if (!string.IsNullOrEmpty(MiddlePhotoUrl))
+                            {
+                                <div class="delete-photo">
+                                    <i title="Set as Avatar" class="fa-solid fa-star action-info-icon" onclick="@MarkPhotoAsMain"></i>
+                                    <BSButton Class="delete-btn" Target="photoDeleteConfirmation"><i title="Delete Photo" class="fa-solid fa-trash action-danger-icon"></i></BSButton>
+                                </div>
+                            }
+
+                            @if (string.IsNullOrEmpty(MiddlePhotoUrl))
+                            {
+                                <div class="empty-gallery">
+                                    <h4>No Photos</h4>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-2 right-photo-wrapper" style='@(!string.IsNullOrEmpty(RightPhotoUrl) ? $"background-image: url({RightPhotoUrl})" : "background: #ababab82;")'>
+                        <div class="right-photo">
+                            <div class="right-arrow" style='@(string.IsNullOrEmpty(LeftPhotoUrl) ? "display: none;" : "")'>
+                                <i title="Swipe Right" onclick="@OnSwipeRightClick" class="fa-solid fa-chevron-right fa-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="add-photo">
+                    <i title="Add new photo" class="fa-solid fa-circle-plus action-success-icon" onclick="@OnPhotoAddClick"></i>
+                </div>
             </div>
+
+            <hr />
 
             <div class="about-user">
+                @if (!IsAboutmeInEditMode)
+                {
 
+                    <div class="row about-header">
+                        <div class="col-11">
+                            <h5>About me</h5>
+                        </div>
+
+                        <div class="col-1 edit-about-section">
+                            <i title="Edit About Me" class="fa-solid fa-pencil action-icon" onclick="@OnAboutSectionEditClick"></i>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <p class="about-text">@AboutMe.Interests</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-11">
+                            <BSInput style="resize:none; height: 155px;" InputSize="Size.ExtraExtraLarge" InputType="InputType.TextArea" placeholder="About me" @bind-Value="AboutMe.Interests" />
+                        </div>
+
+                        <div class="col-1 about-section-buttons">
+                            <button type="submit" class="submit-btn"><i title="Submit" class="fa-solid fa-check action-success-icon" onclick="@SubmitAboutMeSection"></i></button>
+                            <i title="Cancel" class="fa-solid fa-xmark action-danger-icon" onclick="@OnAboutSectionCancelEditClick"></i>
+                        </div>
+                    </div>
+                }
             </div>
+        </div>
+
+        <div class="delete-account">
+            <BSButton Class="delete-btn" Target="accountDeleteConfirmation"><a class="btn-link delete-link">Delete Account</a></BSButton>
         </div>
     </div>
 </div>
 
-@code {
+<ConfirmationDialog Id="photoDeleteConfirmation" Message="Do you want to remove this photo?" OnConfirmClickAsync=DeletePhoto></ConfirmationDialog>
+<ConfirmationDialog Id="accountDeleteConfirmation" Message="Do you want to permanently remove your account?" OnConfirmClickAsync=DeleteAccount></ConfirmationDialog>
 
+@*Warning toaster*@
+<BSToaster />
+
+@code {
+    bool IsMainInfoInEditMode = false;
+    bool IsPasswordInEditMode = false;
+    bool IsAboutmeInEditMode = false;
+
+    bool showMainSpinner = false;
+    string? MainPhotoUrl = string.Empty;
+    int FocusedGalleryPhotoId = 0;
+    IEnumerable<UserPhoto> AllUserPhotos = new List<UserPhoto>();
+    List<string> GalleryPhotos = new List<string>();
+
+    string LeftPhotoUrl;
+    string MiddlePhotoUrl;
+    string RightPhotoUrl;
+
+    /* UserAccount sub-entities */
+    UserAccount User = new();
+    UserAccountGeneralInfo GeneralInfo = new();
+    UserAccountInterests AboutMe = new();
+    UserAccountPassword UserPassword = new();
+    UserAccountPhotos Photos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        showMainSpinner = true;
+
+        User = await _gtwAdapter.GetUserAccount() ?? new();
+        GeneralInfo = new UserAccountGeneralInfo(User);
+        AboutMe = new UserAccountInterests
+            {
+                Interests = User.Interests
+            };
+
+        AllUserPhotos = User.Photos.ToList();    
+        var mainPhoto = User.Photos?.FirstOrDefault(p => p.IsMain);
+        MainPhotoUrl = _imageFileProvider.BuildTransformedImage(mainPhoto?.Url, 200, 200, true, format: ImageFormat.WebP);
+
+        var otherPhotos = User.Photos?.Where(p => !p.IsMain);
+        GalleryPhotos = otherPhotos.Select(p => _imageFileProvider.BuildTransformedImage(p.Url, 310, 400, false, true, format: ImageFormat.WebP)).ToList();
+
+        UpdateGalleryPhotoUrls();
+
+        showMainSpinner = false;
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task HandleValidSubmit()
+    {
+        showMainSpinner = true;
+
+        User = await _gtwAdapter.UpdateUserAccount<UserAccountGeneralInfo>(GeneralInfo);
+        GeneralInfo = new UserAccountGeneralInfo(User);
+
+        showMainSpinner = false;
+        IsMainInfoInEditMode = false;
+    }
+
+    async Task SubmitAboutMeSection()
+    {
+        showMainSpinner = true;
+
+        User = await _gtwAdapter.UpdateUserAccount<UserAccountInterests>(AboutMe);
+        AboutMe = new UserAccountInterests
+            {
+                Interests = User.Interests
+            };
+
+        showMainSpinner = false;
+        IsAboutmeInEditMode = false;
+    }
+
+    async Task OnProfilePhotoEditClick()
+    {
+        await _jsRuntime.InvokeVoidAsync("OpenPhotoSelector.OpenPhotoSelector", "choose-avatar");
+    }
+
+    async Task OnPhotoAddClick()
+    {
+        await _jsRuntime.InvokeVoidAsync("OpenPhotoSelector.OpenPhotoSelector", "upload-photo");
+    }
+
+    async Task UpdatePassword()
+    {
+        var model = new ChangePasswordModel
+        {
+            OldPassword = UserPassword.OldPassword,
+            NewPassword = UserPassword.Password
+        };
+
+        var result = await _gtwAdapter.ChangeUserPassword(model);
+
+        if (!result.Any())
+        {
+            ShowToaster("Password successfully updated", 2000, true);
+            UserPassword = new();
+            IsPasswordInEditMode = false;
+        }
+        else
+        {
+            ShowToaster(string.Join(Environment.NewLine, result), 5000, false);
+        }
+    }
+
+    void OnGeneralInfoEditClick() => IsMainInfoInEditMode = true;
+    void OnGeneralInfoCancelEditClick()
+    {
+        GeneralInfo = new UserAccountGeneralInfo(User);
+        IsMainInfoInEditMode = false;
+    }
+
+    void OnPasswordEditClick() => IsPasswordInEditMode = true;
+    void OnPasswordCancelEditClick()
+    {
+        UserPassword = new();
+        IsPasswordInEditMode = false;
+    }
+
+    void OnAboutSectionEditClick() => IsAboutmeInEditMode = true;
+    void OnAboutSectionCancelEditClick()
+    {
+        AboutMe = new UserAccountInterests
+            {
+                Interests = User.Interests
+            };
+        IsAboutmeInEditMode = false;
+    }
+
+    async Task OnAvatarChange(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount > 0)
+        {
+            var browserImage = e.File;
+            showMainSpinner = true;
+
+            await _gtwAdapter.UploadPhoto(browserImage, true);
+
+            AllUserPhotos = await _gtwAdapter.GetCurrentUserPhotos();
+            var mainPhoto = AllUserPhotos.FirstOrDefault(p => p.IsMain);
+            MainPhotoUrl = _imageFileProvider.BuildTransformedImage(mainPhoto?.Url, 200, 200, true, format: ImageFormat.WebP);
+
+            showMainSpinner = false;
+        }
+    }
+
+    async Task OnNewPhotoAdd(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount > 0)
+        {
+            var browserImage = e.File;
+            showMainSpinner = true;
+
+            await _gtwAdapter.UploadPhoto(browserImage, false);
+
+            AllUserPhotos = await _gtwAdapter.GetCurrentUserPhotos();
+            var otherPhotos = AllUserPhotos.Where(p => !p.IsMain);
+            GalleryPhotos = otherPhotos.Select(p => _imageFileProvider.BuildTransformedImage(p.Url, 310, 400, false, true, format: ImageFormat.WebP)).ToList();
+
+            UpdateGalleryPhotoUrls();
+
+            showMainSpinner = false;
+        }
+    }
+
+    void UpdateGalleryPhotoUrls()
+    {
+        LeftPhotoUrl = FocusedGalleryPhotoId <= GalleryPhotos.Count && FocusedGalleryPhotoId > 0 ? GalleryPhotos[FocusedGalleryPhotoId - 1] : null;
+        MiddlePhotoUrl = FocusedGalleryPhotoId >= 0 && FocusedGalleryPhotoId < GalleryPhotos.Count ? GalleryPhotos[FocusedGalleryPhotoId] : null;
+        RightPhotoUrl = FocusedGalleryPhotoId + 1 < GalleryPhotos.Count && FocusedGalleryPhotoId + 1 >= 0 ? GalleryPhotos[FocusedGalleryPhotoId + 1] : null;
+    }
+
+    void OnSwipeLeftClick()
+    {
+        FocusedGalleryPhotoId++;
+        UpdateGalleryPhotoUrls();
+    }
+
+    void OnSwipeRightClick()
+    {
+        FocusedGalleryPhotoId--;
+        UpdateGalleryPhotoUrls();
+    }
+
+    async Task DeletePhoto()
+    {
+        showMainSpinner = true;
+
+        var photo = User.Photos.Where(p => !p.IsMain).ElementAt(FocusedGalleryPhotoId);
+        await _gtwAdapter.DeleteUserPhoto(photo);
+
+        AllUserPhotos = await _gtwAdapter.GetCurrentUserPhotos();
+        var otherPhotos = AllUserPhotos.Where(p => !p.IsMain);
+        GalleryPhotos = otherPhotos.Select(p => _imageFileProvider.BuildTransformedImage(p.Url, 310, 400, false, true, format: ImageFormat.WebP)).ToList();
+
+        UpdateGalleryPhotoUrls();
+
+        showMainSpinner = false;
+    }
+
+    async Task MarkPhotoAsMain()
+    {
+        showMainSpinner = true;
+
+        var photo = User.Photos.Where(p => !p.IsMain).ElementAt(FocusedGalleryPhotoId);
+        await _gtwAdapter.MarkPhotoAsMain(photo);
+
+        AllUserPhotos = await _gtwAdapter.GetCurrentUserPhotos();
+        var otherPhotos = AllUserPhotos.Where(p => !p.IsMain);
+        GalleryPhotos = otherPhotos.Select(p => _imageFileProvider.BuildTransformedImage(p.Url, 310, 400, false, true, format: ImageFormat.WebP)).ToList();
+
+        UpdateGalleryPhotoUrls();
+
+        var mainPhoto = AllUserPhotos.FirstOrDefault(p => p.IsMain);
+        MainPhotoUrl = _imageFileProvider.BuildTransformedImage(mainPhoto?.Url, 200, 200, true, format: ImageFormat.WebP);
+
+        showMainSpinner = false;
+    }
+
+    async Task DeleteAccount()
+    {
+        showMainSpinner = true;
+
+        await _gtwAdapter.DeleteUserAccount();
+
+        _authStateHandler.DeleteToken();
+        _authStateHandler.UpdateState();
+
+        showMainSpinner = false;
+        _navigationManager.NavigateTo("Login");
+    }
+
+    private void ShowToaster(string message, int timer, bool isSuccess)
+    {
+        _blazorStrap.Toaster.Add(message, o =>
+        {
+            o.CloseAfter = timer;
+            o.Toast = Toast.TopLeft;
+            o.Color = isSuccess ? BSColor.Success : BSColor.Danger;
+        });
+    }
 }

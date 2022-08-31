@@ -1,5 +1,22 @@
-﻿.avatar {
+﻿.account-body {
+    height: 85vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.user-details-container {
+    width: 50%;
+    padding-top: 5vh;
+}
+
+.main-info-container {
+    width: 40%;
+}
+
+.avatar {
     height: 15vh;
     width: 150%;
     border-radius: 20px;
 }
+

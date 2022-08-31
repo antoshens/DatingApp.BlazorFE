@@ -1,4 +1,6 @@
-﻿namespace DatingApp.FrontEnd.Gateway.DotNetGateway
+﻿using Microsoft.AspNetCore.Components.Forms;
+
+namespace DatingApp.FrontEnd.Gateway.DotNetGateway
 {
     public interface IHttpClientService
     {
@@ -8,5 +10,6 @@
         Task<TResponse?> SendPutAsync<TResponse, TRequest>(string url, TRequest? model, bool isAnonymous = false);
         Task<TResponse?> SendPatchAsync<TResponse, TRequest>(string url, PatchModel<TRequest> model, bool isAnonymous = false) where TRequest : class;
         Task<TResponse?> SendDeleteAsync<TResponse>(string url, bool isAnonymous = false);
+        Task SendFormFileContentPostAsync(string url, IBrowserFile file, bool isAnonymous = false);
     }
 }

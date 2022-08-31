@@ -20,7 +20,7 @@ namespace DatingApp.FrontEnd.Gateway.Utils
 
     public class ImageFileProvider : IImageFileProvider
     {
-        public string BuildTransformedImage(string url, int maxHeight, int maxWidth, bool isMaxRadius = false, ImageFormat? format = null)
+        public string BuildTransformedImage(string url, int maxHeight, int maxWidth, bool isMaxRadius = false, bool isCrop = false, ImageFormat? format = null)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -31,7 +31,9 @@ namespace DatingApp.FrontEnd.Gateway.Utils
 
             if (maxHeight > 0 || maxWidth > 0)
             {
-                transformedUrl = transformedUrl.Replace("upload/", $"upload/h_{maxHeight},w_{maxWidth},c_fill/");
+                if (isCrop)
+                    transformedUrl = transformedUrl.Replace("upload/", $"upload/c_crop,h_{maxHeight},w_{maxWidth}/");
+                else transformedUrl = transformedUrl.Replace("upload/", $"upload/h_{maxHeight},w_{maxWidth},c_fill/");
             }
 
             if (isMaxRadius)

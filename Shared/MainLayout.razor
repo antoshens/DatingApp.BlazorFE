@@ -13,23 +13,17 @@
     </Authorized>
 </AuthorizeView>
 
-@*<div class="page">
-    <main>*@
-        <div class="main-wrapper">
-        @Body
-        </div>
+<div class="main-wrapper">
+    @Body
+</div>
 
-        @if (!NavigationManager.Uri.Contains("PrivacyPolicy", StringComparison.OrdinalIgnoreCase))
-        {
-            @*<footer>*@
-                <div class="footer footer-text-row">
-                    <p>Copyright &copy;@DateTime.Now.Year |</p>
-                    <a id="policy-link" class="btn-link" onclick="@OnPrivacyPolicyClick">Privacy Policy</a>
-                </div>
-            @*</footer>*@
-        }
-@*    </main>
-</div>*@
+@if (!NavigationManager.Uri.Contains("PrivacyPolicy", StringComparison.OrdinalIgnoreCase))
+{
+    <div class="footer footer-text-row">
+        <p>Copyright &copy;@DateTime.Now.Year |</p>
+        <a id="policy-link" class="btn-link" onclick="@OnPrivacyPolicyClick">Privacy Policy</a>
+    </div>
+}
 
 @code {
     void OnPrivacyPolicyClick()

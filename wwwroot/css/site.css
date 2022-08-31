@@ -1,12 +1,13 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-
+    /*font-family: 'Lexend Deca', sans-serif !important;*/
 }
 
 body {
     background: #eceeef !important;
+    height: 100vh;
+    overflow-x: hidden;
 }
 
 h1:focus {
@@ -93,6 +94,11 @@ div .spinner-div {
     z-index: 2;
 }
 
+button.delete-btn {
+    color: #ffffff;
+    padding: 0;
+}
+
 div .spinner {
     position: fixed;
     height: 70px;
@@ -128,6 +134,13 @@ button .not-found-button:hover {
 div .not-found-button-container {
     display: flex;
     justify-content: center;
+}
+
+.form-control-row {
+    align-content: stretch;
+    margin-top: 2vh;
+    margin-right: 0px;
+    margin-left: 0px;
 }
 
 .card-div {

@@ -63,6 +63,7 @@ void ConfigureServices(ConfigurationManager config, IServiceCollection services)
     services.AddScoped<IHttpClientService, HttpClientService>();
     services.AddScoped<IUserGateway, UserGateway>();
     services.AddScoped<IMemberGateway, MemberGateway>();
+    services.AddScoped<IPhotoGateway, PhotoGateway>();
     services.AddScoped<GatewayAdapter>();
     services.AddScoped<IImageFileProvider, ImageFileProvider>();
 

@@ -1,5 +1,6 @@
 ﻿using DatingApp.FrontEnd.Gateway.Configuration;
 using DatingApp.FrontEnd.Models.CurrentUser;
+using Microsoft.AspNetCore.Components.Forms;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -80,6 +81,72 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
 #endif
 
                 return default(TResponse);
+            }
+        }
+
+        public async Task SendFormFileContentPostAsync(string url, IBrowserFile file, bool isAnonymous = false)
+        {
+            try
+            {
+                var fullUrl = $"/api/{url}";
+
+                _logger.LogInformation($"Sending POST request to {_options.BaseUrl}{fullUrl}.");
+
+                string content;
+                HttpResponseMessage response;
+                StringContent stringContent;
+
+                using var httpClient = _httpClientFactory.CreateClient("datingapp");
+                using var form = new MultipartFormDataContent();
+                using var stream = file.OpenReadStream(5000000); // max file size - 5 MB
+                using var streamContent = new StreamContent(stream);
+                using var fileContent = new ByteArrayContent(await streamContent.ReadAsByteArrayAsync());
+                {
+                    fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+
+                    form.Add(fileContent, "file", file.Name);
+
+                    _logger.LogInformation($"Sending POST request to {_options.BaseUrl}{fullUrl} with form file body.");
+
+                    if (await _currentUser.IsLoggedInAsync())
+                    {
+                        var token = await _currentUser.GetTokenAsync();
+
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+                    }
+
+                    response = await httpClient.PostAsync(fullUrl, form);
+                }
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation($"Reply POST {_options.BaseUrl}{fullUrl}.");
+
+                    return;
+                }
+                else
+                {
+                    _logger.LogWarning($"Bad reply for {fullUrl}.");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError($"Gateway server returns exception with HTTP code: {ex.StatusCode} and message {ex.Message}.");
+
+#if DEBUG
+                _logger.LogDebug($"Exception details: {ex.Message}{Environment.NewLine}{ex.Data}");
+#endif
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Unknown exception has been occured: {ex.Message}.");
+
+#if DEBUG
+                _logger.LogDebug($"Exception details: {ex.Message}{Environment.NewLine}{ex.Data}");
+#endif
             }
         }
 
@@ -338,7 +405,23 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
 
                 _logger.LogInformation($"Sending PUT request to {_options.BaseUrl}{fullUrl}.");
 
-                var response = await _httpClient.PutAsync(fullUrl, null);
+                string content;
+                HttpResponseMessage response;
+
+                if (model != null)
+                {
+                    content = JsonConvert.SerializeObject(model);
+                    var stringContent = new StringContent(content, Encoding.UTF8, "application/json");
+
+                    _logger.LogInformation($"Sending PUT request to {_options.BaseUrl}{fullUrl} with body {content}.");
+
+                    response = await _httpClient.PutAsync(fullUrl, stringContent);
+                }
+                else
+                {
+                    _logger.LogError($"HTTP PUT method body cannot be null!");
+                    return default(TResponse);
+                }
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
 
@@ -351,10 +434,11 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
                 }
                 else
                 {
+                    var responseModel = JsonConvert.DeserializeObject<TResponse>(jsonResponse);
                     _logger.LogWarning($"Bad reply for {fullUrl}. Details: {jsonResponse}");
-                }
 
-                return default(TResponse);
+                    return responseModel;
+                }
             }
             catch (HttpRequestException ex)
             {

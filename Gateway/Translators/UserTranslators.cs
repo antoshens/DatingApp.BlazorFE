@@ -47,11 +47,11 @@
         };
 
         public UserAccountGateway GetGatewayModel(UserAccount model) => new(model.UserName, model.Password, model.Interests,
-            model.LookingFor, model.City, model.Country, model.Photos, model.FirstName, model.LookingFor.ToString(),
+            model.LookingFor, model.City, model.Country, model.Photos, model.FirstName, model.LastName,
             model.Email, model.BirthDate.ToDateTime(new TimeOnly()), (byte)model.Gender);
 
         public UserAccountGeneralInfoGateway GetGatewayModel(UserAccountGeneralInfo model) => new(model.UserName,
-            model.LookingFor, model.City, model.Country, model.FirstName, model.LookingFor.ToString(),
+            model.LookingFor, model.City, model.Country, model.FirstName, model.LastName,
             model.Email, model.BirthDate.ToDateTime(new TimeOnly()), (byte)model.Gender);
     }
 }

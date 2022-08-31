@@ -1,16 +1,21 @@
-﻿namespace DatingApp.FrontEnd.Gateway.DotNetGateway
+﻿using Microsoft.AspNetCore.Components.Forms;
+
+namespace DatingApp.FrontEnd.Gateway.DotNetGateway
 {
     public class GatewayAdapter
     {
         private readonly IUserGateway _userGateway;
         private readonly IMemberGateway _memberGateway;
+        private readonly IPhotoGateway _photoGateway;
 
         public GatewayAdapter(
             IUserGateway userGateway,
-            IMemberGateway memberGateway)
+            IMemberGateway memberGateway,
+            IPhotoGateway photoGateway)
         {
             _userGateway = userGateway;
             _memberGateway = memberGateway;
+            this._photoGateway = photoGateway;
         }
 
         public async Task<LoggedUserGateway?> LoginAsync(UserLogin login)
@@ -92,9 +97,39 @@
             return userAccount;
         }
 
+        public async Task<List<string>> ChangeUserPassword(ChangePasswordModel model)
+        {
+            return await _userGateway.UpdatePassword(model);
+        }
+
         public async Task<int> DeleteUserAccount()
         {
             return await _userGateway.DeleteUserDetails();
+        }
+
+        public async Task UploadPhoto(IBrowserFile photoFile, bool isMain)
+        {
+            await _photoGateway.UploadNewPhoto(photoFile, isMain);
+        }
+
+        public async Task<IEnumerable<UserPhoto>> GetUserPhotos(int userId)
+        {
+            return await _photoGateway.GetUserPhotos(userId);
+        }
+
+        public async Task<IEnumerable<UserPhoto>> GetCurrentUserPhotos()
+        {
+            return await _photoGateway.GetUserPhotos(null);
+        }
+
+        public async Task<UserPhoto> DeleteUserPhoto(UserPhoto photo)
+        {
+            return await _photoGateway.DeletePhoto(photo);
+        }
+
+        public async Task<UserPhoto> MarkPhotoAsMain(UserPhoto photo)
+        {
+            return await _photoGateway.MarkAsMain(photo);
         }
     }
 }

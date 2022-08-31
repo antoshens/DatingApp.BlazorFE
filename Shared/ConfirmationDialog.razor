@@ -1,9 +1,17 @@
 ﻿<BSModal DataId=@Id  IsStaticBackdrop="true" IsCentered="true">
     <Header>Are you sure?</Header>
     <Content>@Message</Content>
+
     <Footer Context="modal">
         <BSButton MarginStart="Margins.Auto" Color="BSColor.Secondary" @onclick="modal.HideAsync">Close</BSButton>
-        <BSButton Color="BSColor.Success" OnClick=OnConfirmClick>OK</BSButton>
+        @if (OnConfirmClick != null)
+        {
+            <BSButton Color="BSColor.Success" OnClick="OnConfirmClick">OK</BSButton>
+        }
+        else if (OnConfirmClickAsync != null)
+        {
+            <BSButton Color="BSColor.Success" OnClick="OnConfirmClickAsync" @onmouseup="modal.HideAsync">OK</BSButton>
+        }
     </Footer>
 </BSModal>
 
@@ -17,4 +25,7 @@
 
     [Parameter]
     public Action OnConfirmClick { get; set; }
+
+    [Parameter]
+    public Func<Task> OnConfirmClickAsync { get; set; }
 }

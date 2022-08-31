@@ -9,8 +9,9 @@
         /// <param name="maxHeight"></param>
         /// <param name="maxWidth"></param>
         /// <param name="isMaxRadius"></param>
+        /// <param name="isCrop"></param>
         /// <param name="format"></param>
         /// <returns>Transformed image url</returns>
-        string BuildTransformedImage(string url, int maxHeight, int maxWidth, bool isMaxRadius = false, ImageFormat? format = null);
+        string BuildTransformedImage(string url, int maxHeight, int maxWidth, bool isMaxRadius = false, bool isCrop = false, ImageFormat? format = null);
     }
 }

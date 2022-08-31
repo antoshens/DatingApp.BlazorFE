@@ -30,6 +30,29 @@
             }
         }
     }
+
+    window.OpenPhotoSelector = {
+        OpenPhotoSelector: function (elementId) {
+            document.getElementById(elementId).click();
+        }
+    }
+
+    window.ElementClass = {
+        SetClass: function (elementId, className) {
+            let element = document.getElementById(elementId);
+            
+            if (!element.classList.contains(className)) {
+                element.classList += ` ${className}`;
+            }
+        },
+        RemoveClass: function (elementId, className) {
+            let element = document.getElementById(elementId);
+            
+            if (element.classList.contains(className)) {
+                element.classList.remove(className);
+            }
+        }
+    }
 </script>
 
 <component type="typeof(App)" render-mode="Server" />
