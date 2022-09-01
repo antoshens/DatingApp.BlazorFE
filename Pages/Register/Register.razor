@@ -18,7 +18,7 @@
         </div>
 
         <BSProgress>
-            <BSProgressBar Color="BSColor.Success" Value="@(currentStep * 33.3)"></BSProgressBar>
+            <BSProgressBar Color="BSColor.Success" Value="@(currentStep * 100 / maxStepsAmount)"></BSProgressBar>
         </BSProgress>
 
         <EditForm class="row" Model="@account" OnValidSubmit="@HandleValidSubmit">
@@ -118,14 +118,14 @@
 <BSToaster/>
 
 @code {
-    private const long maxFileSize = 1024 * 1024 * 15;
-
     RegisterUser account = new ();
     int currentStep = 1;
     bool isRegistrationProcessing;
     const int maxStepsAmount = 3;
     bool showCustomError;
     string customErrorMessage;
+
+    IBrowserFile mainPhotoFile;
 
     void OnBackClick()
     {
@@ -144,10 +144,20 @@
                 return;
             }
 
+            if (mainPhotoFile is null)
+            {
+                showCustomError = true;
+                customErrorMessage = "Please select your avatar";
+
+                return;
+            }
+
             showCustomError = false;
             isRegistrationProcessing = true;
             var response = await gtwAddapter.RegisterAsync(account);
-            // TODO: Add API call to upload main photo
+
+            await gtwAddapter.UploadPhoto(mainPhotoFile, true);
+
             isRegistrationProcessing = false;
 
             if (response != null)
@@ -170,17 +180,7 @@
     {
         if (e.FileCount > 0)
         {
-            var browserImage = e.File;
-
-            try
-            {
-                using var stream = browserImage.OpenReadStream(5000000); // max file size - 5 MB
-                account.MainPhoto = new FormFile(stream, stream.Position, stream.Length, "\"photos\"", browserImage.Name);
-            }
-            catch (IOException)
-            {
-                ShowToaster("Photo size shouldn't be more than 5MB");
-            }
+            mainPhotoFile = e.File;
         }
     }
 
