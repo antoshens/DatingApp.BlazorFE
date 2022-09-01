@@ -56,13 +56,16 @@
     margin-top: 8px;
 }
 
-@media (min-width: 641px) {
-    .navbar-toggler {
-        display: none;
-    }
+.navbar-toggler {
+    display: none;
+}
 
-    .collapse {
-        /* Never collapse the sidebar for wide screens */
-        display: block;
+@media screen and (max-width: 560px) {
+    .navbar-toggler {
+        display: flex;
+        width: calc(100% - 15px);
+        height: 50px;
+        justify-content: flex-end;
+        align-items: center;
     }
 }

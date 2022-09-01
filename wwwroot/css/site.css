@@ -211,6 +211,12 @@ button.register-btn {
     }
 }
 
+@media screen and (max-width: 560px) {
+    ul.exapnded-nav {
+        display: none;
+    }
+}
+
 .member-details-modal > div.modal-dialog {
     max-width: 60vw !important;
 }

@@ -6,7 +6,7 @@
 @inject NavigationManager _navigationManager;
 
 <div>
-    <BSNav Justify="Justify.End">
+    <BSNav Class="exapnded-nav" Justify="Justify.End">
         <BSNavItem Url="Dashboard">Find you destiny</BSNavItem>
         <BSNavItem>Likes</BSNavItem>
         <BSNavItem>Chats</BSNavItem>
@@ -14,18 +14,43 @@
         <hr class="nav-divider"/>
         <BSNavItem title="Logout" Target="logoutConfirmation" Class="not-menu-item"><i class="fa-solid fa-arrow-right-from-bracket"></i></BSNavItem>
     </BSNav>
+
+    <div class="navbar-toggler">
+        <i class="fa-solid fa-xl fa-bars action-danger-icon" onclick="@OpenCanvas"></i>
+    </div>
 </div>
+
+<BSOffCanvas @ref="_offCanvas" Placement="Placement.Right">
+    <Header>Content</Header>
+    <Content>
+        <BSNav IsVertical="true">
+            <BSNavItem Url="Dashboard">Find you destiny</BSNavItem>
+            <BSNavItem>Likes</BSNavItem>
+            <BSNavItem>Chats</BSNavItem>
+            <BSNavItem title="Account" Url="Account">Welcome, @userName&nbsp;<i class="fa-regular fa-circle-user"></i></BSNavItem>
+            <hr />
+            <BSNavItem title="Logout" Target="logoutConfirmation" Class="not-menu-item">Logout</BSNavItem>
+        </BSNav>
+    </Content>
+</BSOffCanvas>
 
 <ConfirmationDialog Id="logoutConfirmation" Message="Do you want to log out from the system?" OnConfirmClick=OnLogoutConfirmed></ConfirmationDialog>
 
 @code {
     public string userName;
+    private BSOffCanvas? _offCanvas;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
         userName = await _currentUser.GetFirstNameAsync();
+    }
+
+    private async Task OpenCanvas()
+    {
+        if (_offCanvas != null)
+            await _offCanvas.ToggleAsync();
     }
 
     public void OnLogoutConfirmed()
