@@ -228,3 +228,24 @@ div.carousel-inner {
 .divider {
     color: #bca9a9;
 }
+
+.likes-bs-table {
+    width: 97% !important;
+    margin-left: 17px;
+    margin-top: 10px;
+}
+
+.likes-table nav {
+    margin-left: 17px;
+}
+
+.page-item.active .page-link {
+    z-index: 3;
+    color: #ffffff !important; 
+    background-color: #e6a4c4 !important;
+    border-color: #ee9dc1 !important;
+}
+
+th.avatar-col > a.sort-by, th.chat-col > a.sort-by {
+    display: none;
+}

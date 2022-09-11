@@ -92,16 +92,16 @@
                     }
                     else
                     {
-                        foreach (var photo in allPhotos)
-                        {
-                            var url = ConvertPhotoUrlForSlider(photo.Url);
+                        <BSCarousel IsFade="true" IsDark="true">
+                            @foreach (var photo in allPhotos)
+                            {
+                                var url = ConvertPhotoUrlForSlider(photo.Url);
 
-                            <BSCarousel IsFade="true" IsDark="true">
                                 <BSCarouselItem Interval="20000">
                                     <img class="d-block w-100" width="400" height="250" src="@url" focusable="false" />
                                 </BSCarouselItem>
-                            </BSCarousel>
-                        }
+                            }
+                        </BSCarousel>
                     }
                 </div>
 

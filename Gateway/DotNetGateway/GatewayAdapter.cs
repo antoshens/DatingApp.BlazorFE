@@ -131,5 +131,15 @@ namespace DatingApp.FrontEnd.Gateway.DotNetGateway
         {
             return await _photoGateway.MarkAsMain(photo);
         }
+
+        public async Task<IEnumerable<Member>> GetLikedMembers(int skip, int take)
+        {
+            return await _memberGateway.GetLikedMembersAsync(skip, take);
+        }
+
+        public async Task<int> GetLikedMemberCount()
+        {
+            return await _memberGateway.GetLikedMemberCountAsync();
+        }
     }
 }

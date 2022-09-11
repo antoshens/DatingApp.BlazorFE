@@ -1,0 +1,113 @@
+﻿@page "/UserLikes";
+
+@using DatingApp.FrontEnd.Gateway.DotNetGateway;
+@using System.Data;
+@using Models;
+
+@attribute [Authorize]
+
+@inject GatewayAdapter _gtwAdapter;
+
+<div class="likes-container">
+    <div class="likes-table">
+        @*Spinner*@
+        @if (showMainSpinner)
+        {
+            <div class="spinner-div account-spinner">
+                <BSSpinner id="spinner" Class="spinner" Color="BSColor.Warning" Size="Size.ExtraLarge" />
+            </div>
+        }
+        <BSDataTable Class="likes-bs-table" FetchItems="FetchItems" PaginationBottom="true" StartPage="1" RowsPerPage="5" Context="item" Color="BSColor.Light" IsBordered="true" IsBorderLess="true" IsCaptionTop="true">
+            <Header>
+                <BSDataTableHead TValue="Member" Sortable="true" Column="@(nameof(Member.FirstName))" Class="avatar-col"></BSDataTableHead>
+                <BSDataTableHead TValue="Member" Sortable="true" Column="@(nameof(Member.FirstName))" ColumnFilter="true">First name</BSDataTableHead>
+                <BSDataTableHead TValue="Member" Sortable="true" Column="@(nameof(Member.LastName))" ColumnFilter="true">Last name</BSDataTableHead>
+                <BSDataTableHead TValue="Member" Sortable="true" Column="@(nameof(Member.Gender))" ColumnFilter="true">Gender</BSDataTableHead>
+                <BSDataTableHead TValue="Member" Sortable="true" Column="@(nameof(Member.City))" ColumnFilter="true">Age</BSDataTableHead>
+                <BSDataTableHead TValue="Member" Sortable="true" Column="@(nameof(Member.City))" ColumnFilter="true">City</BSDataTableHead>
+                <BSDataTableHead TValue="Member" Sortable="true" Column="@(nameof(Member.FirstName))" Class="chat-col"></BSDataTableHead>
+            </Header>
+            <Body>
+                <BSDataTableRow>
+                    <BSTD style="width: 20px;" AlignRow="AlignRow.Middle">
+                        @{
+                            var avatar = item.Photos.Where(p => p.IsMain)
+                                                .Select(p => p.Url)
+                                                .SingleOrDefault();
+                        }
+
+                        <div class="avatar-container">
+                            <img class="avatar-img" src="@avatar"/>
+                        </div>
+                    </BSTD>
+                    <BSTD AlignRow="AlignRow.Middle">
+                        @item.FirstName
+                    </BSTD>
+                    <BSTD AlignRow="AlignRow.Middle">
+                        @item.LastName
+                    </BSTD>
+                    <BSTD AlignRow="AlignRow.Middle">
+                        @item.Gender
+                    </BSTD>
+                    <BSTD AlignRow="AlignRow.Middle">
+                        @item.Age
+                    </BSTD>
+                    <BSTD AlignRow="AlignRow.Middle">
+                        @item.City
+                    </BSTD>
+                    <BSTD>
+                        <i id="md-user-chat" class="far fa-message fa-xl action-info-icon" title="Open Chat"></i>
+                    </BSTD>
+                </BSDataTableRow>
+            </Body>
+        </BSDataTable>
+    </div>
+</div>
+
+@code {
+    private int _skip = 0;
+    private int _take = 20;
+
+    public List<Member> likedUsers = new List<Member>();
+    public bool showMainSpinner = false;
+
+    private async Task<(IEnumerable<Member>, int)> FetchItems(DataRequest dataRequest)
+    {
+        showMainSpinner = true;
+
+        var model = await _gtwAdapter.GetLikedMembers((_take + _skip) * (dataRequest.Page - 1), _take) ?? Enumerable.Empty<Member>();
+
+        var count = likedUsers.Count();
+
+        if (dataRequest.FilterColumnProperty != null && dataRequest.Filter != null)
+        {
+            var data = model.Where(q =>
+                (q.FirstName.ToLower().Contains(dataRequest.Filter) && nameof(q.FirstName) == dataRequest.FilterColumn) ||
+                (q.LastName.ToLower().Contains(dataRequest.Filter) && nameof(q.LastName) == dataRequest.FilterColumn) ||
+                (q.City.ToLower().Contains(dataRequest.Filter) && nameof(q.City) == dataRequest.FilterColumn) ||
+                (int.TryParse(dataRequest.Filter, out var age) && q.Age == age && nameof(q.City) == dataRequest.FilterColumn) ||
+                (q.City.ToLower().Contains(dataRequest.Filter) && nameof(q.City) == dataRequest.FilterColumn))
+                .ToList();
+
+            count = data.Count();
+            
+            showMainSpinner = false;
+
+            return (data, count);
+        }
+
+        if (dataRequest.SortColumnProperty != null)
+        {
+            showMainSpinner = false;
+
+            if (dataRequest.Descending)
+                return (model.OrderByDescending(x => dataRequest.SortColumnProperty.GetValue(x)).Skip(dataRequest.Page * 20).Take(20).ToList(), count);
+
+            return (model.OrderBy(x => dataRequest.SortColumnProperty.GetValue(x)).Skip(dataRequest.Page * 20).Take(20).ToList(), count);
+        }
+
+        showMainSpinner = false;
+
+        return (model.ToList(), count);
+    }
+}
