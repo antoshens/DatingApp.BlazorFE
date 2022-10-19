@@ -38,10 +38,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseCors(_ => _.AllowAnyHeader()
-    .AllowAnyMethod()
-    .AllowCredentials()
-    .WithOrigins(origins.Split(";")));
+//app.UseCors(_ => _.AllowAnyHeader()
+//    .AllowAnyMethod()
+//    .AllowCredentials()
+//    .WithOrigins(origins.Split(";")));
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
