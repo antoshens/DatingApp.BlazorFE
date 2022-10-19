@@ -6,12 +6,12 @@
 }
 
 .chat-wrapper {
-    height: 95%;
+    height: 94%;
     width: 80%;
     background: #ffffff;
     border-radius: 30px;
     -webkit-box-shadow: -1px 4px 20px 0px #6461614a;
-    margin-top: 3vh;
+    margin-top: 2vh;
     display: flex;
 }
 
@@ -20,6 +20,7 @@
     height: 100%;
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
+    background-color: #999a9a30;
 }
 
 .chat-window {
@@ -27,22 +28,21 @@
     border-bottom-right-radius: 30px;
     height: 100%;
     width: 70%;
-    display: flex;
     overflow: auto;
 }
 
 .incomming-msg {
-    background-color: #d2d2cd87;
+    background-color: #9db5e0ba;
     width: 40%;
-    height: fit-content;
+    height: 100px;
     border-radius: 15px;
     margin-left: 10px;
 }
 
 .outgoing-msg {
-    background-color: #9db5e0ba;
+    background-color: #d2d2cd87;
     width: 40%;
-    height: fit-content;
+    height: 100px;
     border-radius: 15px;
     margin-left: calc(60% - 10px);
 }

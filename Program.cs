@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using UserGateway = DatingApp.FrontEnd.Gateway.DotNetGateway.UserGateway;
 using DatingApp.FrontEnd.Gateway.Utils;
+using Microsoft.AspNetCore.SignalR.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -20,7 +21,6 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorStrap();
 
 ConfigureSettings(configuration, builder.Services);
-ConfigureServices(configuration, builder.Services);
 
 var app = builder.Build();
 
@@ -57,6 +57,12 @@ void ConfigureServices(ConfigurationManager config, IServiceCollection services)
     {
         cl.BaseAddress = new Uri(baseUrl);
     });
+
+    // Connect to SignalR message hub
+    var connection = new HubConnectionBuilder()
+                    .WithUrl($"{baseUrl}/hubs/message")
+                    .WithAutomaticReconnect()
+                    .Build();
 
     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
