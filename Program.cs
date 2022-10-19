@@ -20,6 +20,7 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddBlazorStrap();
 
+ConfigureServices(configuration, builder.Services);
 ConfigureSettings(configuration, builder.Services);
 
 var app = builder.Build();
