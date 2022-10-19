@@ -42,12 +42,12 @@
   </ItemGroup>
 
   <!-- Compile SCSS files into CSS -->
-  <Target Name="CompileComponentSass" BeforeTargets="Compile">
+  <Target Name="CompileComponentSass" BeforeTargets="Compile" Condition="'$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
     <Message Text="Compiling all components' SCSS files" Importance="high" />
     <Exec Condition="!$([System.Text.RegularExpressions.Regex]::IsMatch ('%(ComponentScssFiles.Identity)', `.*[/\\]_.*`))" Command="npm run compile-sass -- --style=compressed --no-source-map --load-path=Styles/Core %(ComponentScssFiles.Identity) %(relativedir)%(filename).css" />
   </Target>
 
-  <Target Name="CompileGlobalSass" BeforeTargets="Compile">
+  <Target Name="CompileGlobalSass" BeforeTargets="Compile" Condition="'$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
     <Message Text="Compiling global SCSS file" Importance="high" />
     <Exec Command="npm run compile-sass -- --style=compressed wwwroot/css" />
   </Target>
